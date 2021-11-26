@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     private Collider2D coll;
     private Animator anim;
 
+    [SerializeField] private float walkSpeed = 1.0f, runSpeed = 1.5f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +31,11 @@ public class PlayerController : MonoBehaviour
 
     //眩晕
     public void  Collapsing(float CollapseTime)
+    {
+
+    }
+
+    private void moving()
     {
 
     }
