@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     //眩晕
     public void  Collapsing(float CollapseTime)
     {
-
+        Debug.Log("人物被眩晕");
     }
 
     private void moving()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,7 +31,7 @@ public class BossController : MonoBehaviour
         Destroy(rightpoint.gameObject);
         
         //默认不开启技能范围检测
-        //VerticalAttackScope.gameObject.SetActive(false);
+        VerticalAttackScope.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -38,11 +39,9 @@ public class BossController : MonoBehaviour
     {
         Movement();
         anim.SetFloat("walkSpeed",moveSpeed);
-        VerticalAttack();
-        // HorizontalAttack();
-        // UpwardAttack();
     }
     
+    //简单移动
     void Movement()
     {
         if(faceRight)
@@ -65,28 +64,45 @@ public class BossController : MonoBehaviour
         }
     }
 
+    
     void VerticalAttack()
     {
         //播放动画
         anim.SetTrigger("VerticalAttack");
     }
 
+    //竖劈的效果，竖劈动画结束时调用
     void VerticalAttackEffect()
     {
+        VerticalAttackScope.gameObject.SetActive(true);
         //获取矩形对角线两顶点
-        Transform leftTop = VerticalAttackScope.GetChild(1);
-        Transform rightBottom = VerticalAttackScope.GetChild(2);
-        //获取矩形范围内的Player，如果没有返回null
-        GameObject player = Physics2D.OverlapArea(leftTop.position, rightBottom.position).gameObject;
+        Transform leftTop = VerticalAttackScope.GetChild(0);
+        Transform rightBottom = VerticalAttackScope.GetChild(1);
+        Debug.Log("检测开始");
+        Collider2D player = null;
+        try
+        {
+            player = Physics2D.OverlapArea(leftTop.position, rightBottom.position);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Debug.Log("区域内无Player");
+            throw;
+        }
+        
+        //如果检测到player就调用其自身的受伤函数
         if (player)
         {
-            //获取人物的脚本，调用相关函数
-            PlayerController playerController = player.GetComponent<PlayerController>();
             if (player.CompareTag("Player"))
             {
+                //获取人物的脚本，调用相关函数
+                PlayerController playerController = player.GetComponent<PlayerController>();
                 playerController.Collapsing(1f);
             }
         }
+        
+        VerticalAttackScope.gameObject.SetActive(false);
     }
     
     void HorizontalAttack()
