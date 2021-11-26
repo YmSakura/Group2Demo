@@ -259,7 +259,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5375145111061826963, guid: 3dc2d7535bfea26498e3343df87ae5be, type: 3}
       propertyPath: m_Name
-      value: Player
+      value: Boss
+      objectReference: {fileID: 0}
+    - target: {fileID: 6170706292023633128, guid: 3dc2d7535bfea26498e3343df87ae5be, type: 3}
+      propertyPath: m_Size.y
+      value: 21.012602
+      objectReference: {fileID: 0}
+    - target: {fileID: 6170706292023633128, guid: 3dc2d7535bfea26498e3343df87ae5be, type: 3}
+      propertyPath: m_Offset.y
+      value: 16.829435
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3dc2d7535bfea26498e3343df87ae5be, type: 3}
+--- !u!1 &6170706292023633127 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5375145111061826963, guid: 3dc2d7535bfea26498e3343df87ae5be, type: 3}
+  m_PrefabInstance: {fileID: 6170706292023633126}
+  m_PrefabAsset: {fileID: 0}
+--- !u!60 &6170706292023633128 stripped
+PolygonCollider2D:
+  m_CorrespondingSourceObject: {fileID: 6170706292023633129, guid: 3dc2d7535bfea26498e3343df87ae5be, type: 3}
+  m_PrefabInstance: {fileID: 6170706292023633126}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6170706292023633129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6170706292023633127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c101e2cdee32d9c4d848186b8b62dc0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  swordCollider: {fileID: 6170706292023633128}
