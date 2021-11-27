@@ -12,17 +12,19 @@ public class PlayerController : MonoBehaviour
     private float inputX, inputY;
 
     [Header("人物设置")]
-    [SerializeField] public float walkSpeed = 1.5f, runSpeed = 2.5f, rollSpeed = 0.5f;
-    [SerializeField] public int healthSet = 120, stayingPowerSet = 100, defensivePower = 8; //生命， 耐力， 防御值
+    [SerializeField] public float walkSpeed = 1.5f, runSpeed = 2.5f, rollSpeed = 0.5f, defendSpeed = 0.5f;
+    [SerializeField] public int healthSet = 120, stayingPowerSet = 100, defendPower = 8; //生命， 耐力， 防御值
+    public int damage;
     private int health, stayingPower; //生命， 耐力， 防御值
-    private bool isRunning; // 跑步行走动画切换条件
+    private bool isRunning, isDefending; // 跑步行走动画切换条件
+    public bool isHurt;
 
     [Header("计时器&耐力消耗&回复")]
     //分别生命恢复计时器，耐力回复计时器， 跑步计时器， 眩晕计时器
-    [SerializeField] private float healthTimer, stayingPowerTimer, runTimer, collapseTimer; 
+    [SerializeField] private float healthTimer, stayingPowerTimer, runTimer, defendTimer, collapseTimer; 
     //分别生命恢复间隔 5s ，耐力回复间隔， 跑步间隔 1s ， 眩晕间隔
     [SerializeField] private float healthTimerSet = 5, stayingPowerTimerSet = 1, runTimerSet = 1, collapseTimerSet; 
-    public int runCost = 10, rollCost = 34, defensiveCost;
+    public int runCost = 10, rollCost = 34, defendCost;
     public int healthIncrease = 1, stayingPowerIncrease = 20;
 
     // Start is called before the first frame update
@@ -79,6 +81,7 @@ public class PlayerController : MonoBehaviour
         inputX = Input.GetAxisRaw("Horizontal");
         inputY = Input.GetAxisRaw("Vertical");
         Vector2 moveInput = new Vector2(inputX, inputY).normalized;//标准化向量长度
+
         //跑步
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -97,6 +100,7 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+
         //翻滚
         else if(Input.GetKeyDown(KeyCode.Space))
         {
@@ -108,6 +112,10 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("isRolling", true);
             }
         }
+
+        //防御
+        //Defending(moveInput, getDamage);    缺少目标的受到的伤害数值；
+
         //行走
         else
         {
@@ -134,11 +142,46 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
     //结束翻滚（动画事件）
     void EndRolling()
     {
         coll.enabled = true;
         anim.SetBool("isRolling", false);
+    }
+
+    //普通防御
+    void Defending(Vector2 moveInput, int getDamage)
+    {
+        if (stayingPower > 0 && Input.GetMouseButton(1))
+        {
+            isDefending = true;
+            anim.SetBool("isDefending", isDefending);
+            if (!isHurt)
+            {
+                rb.velocity = defendSpeed * moveInput;
+            }
+            else
+            {
+                int realDamage = 0;
+                rb.velocity = -walkSpeed * moveInput;
+                if (stayingPower < (getDamage - defendPower))
+                {
+                    stayingPower = 0;
+                    realDamage = getDamage;
+                }
+                else
+                {
+                    stayingPower -= getDamage - defendPower;
+                }
+                health -= realDamage;
+            }
+        }
+        else if(stayingPower <= 0 || Input.GetMouseButtonUp(1))
+        {
+            isDefending = false;
+            anim.SetBool("isDefending", isDefending);
+        }
     }
 
 
