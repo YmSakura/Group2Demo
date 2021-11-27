@@ -9,12 +9,12 @@ public class BossController : MonoBehaviour
     private Animator anim;
     private Rigidbody2D rb;
     
-    [Header("技能相关")]
+    [Header("技能检测相关组件")]
     public Transform verticalAttackScope;
     public GameObject horizontalAttackScope;
     public Transform player;
 
-    [Header("锤击")] 
+    [Header("锤击检测组件")] 
     public GameObject hammerBlowScope;
     private Transform rightCircle, leftCircle;
     
@@ -84,11 +84,11 @@ public class BossController : MonoBehaviour
     void VerticalAttackDirection()
     {
         //如果朝右并且人物在boss左侧就转向
-        if ((faceRight && player.position.x < transform.position.x))
+        if (faceRight && player.position.x < transform.position.x)
         {
             Debug.Log("boss向左转");
             transform.localScale = new Vector3(-1, 1, 1);
-        }else if ((!faceRight && player.position.x > transform.position.x))
+        }else if (!faceRight && player.position.x > transform.position.x)
         {
             Debug.Log("boss向右转");
             transform.localScale = new Vector3(1, 1, 1);
@@ -102,7 +102,7 @@ public class BossController : MonoBehaviour
         Transform leftTop = verticalAttackScope.GetChild(0);
         Transform rightBottom = verticalAttackScope.GetChild(1);
         
-        Collider2D player = null;
+        Collider2D player;
         try
         {
             player = Physics2D.OverlapArea(leftTop.position, rightBottom.position);
@@ -119,7 +119,6 @@ public class BossController : MonoBehaviour
         {
             if (player.CompareTag("Player"))
             {
-                
                 //获取人物的脚本，调用相关函数
                 PlayerHurt playerHurt = player.GetComponent<PlayerHurt>();
                 playerHurt.Collapsing(1f);
