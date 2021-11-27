@@ -9,11 +9,13 @@ public class BossController : MonoBehaviour
     private Rigidbody2D rb;
     
     public Transform leftpoint, rightpoint;
-    public Transform VerticalAttackScope;
+    public Transform verticalAttackScope;
+    public Transform player;
     
     public float moveSpeed;
     
     //控制转向，默认向右
+    [SerializeField]
     private bool faceRight = true;
     private float leftX, rightX;
 
@@ -31,7 +33,7 @@ public class BossController : MonoBehaviour
         Destroy(rightpoint.gameObject);
         
         //默认不开启技能范围检测
-        VerticalAttackScope.gameObject.SetActive(false);
+        verticalAttackScope.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -71,13 +73,22 @@ public class BossController : MonoBehaviour
         anim.SetTrigger("VerticalAttack");
     }
 
-    //竖劈的效果，竖劈动画结束时调用
+    //蓄力时boss可以转向
+    void VerticalAttackDirection()
+    {
+        if ((faceRight && player.position.x < transform.position.x) || (!faceRight&&player.position.x > transform.position.x))
+        {
+            transform.localScale.Set(-1,1,1);
+        }
+    }
+    
+    //竖劈的效果，竖劈动画时通过event调用
     void VerticalAttackEffect()
     {
-        VerticalAttackScope.gameObject.SetActive(true);
+        verticalAttackScope.gameObject.SetActive(true);
         //获取矩形对角线两顶点
-        Transform leftTop = VerticalAttackScope.GetChild(0);
-        Transform rightBottom = VerticalAttackScope.GetChild(1);
+        Transform leftTop = verticalAttackScope.GetChild(0);
+        Transform rightBottom = verticalAttackScope.GetChild(1);
         Debug.Log("检测开始");
         Collider2D player = null;
         try
@@ -102,7 +113,7 @@ public class BossController : MonoBehaviour
             }
         }
         
-        VerticalAttackScope.gameObject.SetActive(false);
+        verticalAttackScope.gameObject.SetActive(false);
     }
     
     void HorizontalAttack()
