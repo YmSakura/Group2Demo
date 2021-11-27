@@ -7,11 +7,6 @@ public class HammerBlowRight : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
-        {
-            GameObject player = other.gameObject;
-            PlayerController playerController = player.GetComponent<PlayerController>();
-            playerController.Collapsing(1);
-        }
+        CollisionCheck.PlayerCheck(other);
     }
 }

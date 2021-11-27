@@ -121,8 +121,8 @@ public class BossController : MonoBehaviour
             {
                 
                 //获取人物的脚本，调用相关函数
-                PlayerController playerController = player.GetComponent<PlayerController>();
-                playerController.Collapsing(1f);
+                PlayerHurt playerHurt = player.GetComponent<PlayerHurt>();
+                playerHurt.Collapsing(1f);
             }
         }
         

@@ -40,7 +40,7 @@ public class PlayerHurt : MonoBehaviour
     //击退击飞
     public void Repeled(float x, float y)
     {
-
+        Debug.Log("人物被击退");
     }
 
     //眩晕

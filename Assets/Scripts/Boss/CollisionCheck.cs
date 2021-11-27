@@ -18,8 +18,8 @@ public class CollisionCheck : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             GameObject player = other.gameObject;
-            PlayerController playerController = player.GetComponent<PlayerController>();
-            playerController.Repeled(1,1);
+            PlayerHurt playerHurt = player.GetComponent<PlayerHurt>();
+            playerHurt.Repeled(1,1);
         }
     }
 }
