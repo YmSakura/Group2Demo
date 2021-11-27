@@ -5,17 +5,22 @@ using UnityEngine;
 
 public class BossController : MonoBehaviour
 {
+    [Header("自身组件")]
     private Animator anim;
     private Rigidbody2D rb;
     
-    public Transform leftpoint, rightpoint;
+    [Header("技能相关")]
     public Transform verticalAttackScope;
+    public GameObject horizontalAttackScope;
     public Transform player;
+
+    [Header("锤击")] 
+    public GameObject hammerBlowScope;
+    private Transform rightCircle, leftCircle;
     
+    [Header("移动相关")]
     public float moveSpeed;
-    
-    //控制转向，默认向右
-    [SerializeField]
+    public Transform leftpoint, rightpoint;
     private bool faceRight = true;
     private float leftX, rightX;
 
@@ -24,6 +29,8 @@ public class BossController : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        rightCircle = hammerBlowScope.transform.Find("RightCircle");
+        leftCircle = hammerBlowScope.transform.Find("LeftCircle");
         
         //获取子物体坐标
         leftX = leftpoint.position.x;
@@ -34,12 +41,14 @@ public class BossController : MonoBehaviour
         
         //默认不开启技能范围检测
         verticalAttackScope.gameObject.SetActive(false);
+        horizontalAttackScope.SetActive(false);
+        //hammerBlowScope.SetActive(false);
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
         Movement();
+        HammerBlow();
         anim.SetFloat("walkSpeed",moveSpeed);
     }
     
@@ -66,22 +75,25 @@ public class BossController : MonoBehaviour
         }
     }
 
-    
+    //竖劈动画的启动
     void VerticalAttack()
     {
-        //播放动画
         anim.SetTrigger("VerticalAttack");
     }
-
-    //蓄力时boss可以转向
+    //竖劈蓄力时boss的转向
     void VerticalAttackDirection()
     {
-        if ((faceRight && player.position.x < transform.position.x) || (!faceRight&&player.position.x > transform.position.x))
+        //如果朝右并且人物在boss左侧就转向
+        if ((faceRight && player.position.x < transform.position.x))
         {
-            transform.localScale.Set(-1,1,1);
+            Debug.Log("boss向左转");
+            transform.localScale = new Vector3(-1, 1, 1);
+        }else if ((!faceRight && player.position.x > transform.position.x))
+        {
+            Debug.Log("boss向右转");
+            transform.localScale = new Vector3(1, 1, 1);
         }
     }
-    
     //竖劈的效果，竖劈动画时通过event调用
     void VerticalAttackEffect()
     {
@@ -89,7 +101,7 @@ public class BossController : MonoBehaviour
         //获取矩形对角线两顶点
         Transform leftTop = verticalAttackScope.GetChild(0);
         Transform rightBottom = verticalAttackScope.GetChild(1);
-        Debug.Log("检测开始");
+        
         Collider2D player = null;
         try
         {
@@ -107,23 +119,59 @@ public class BossController : MonoBehaviour
         {
             if (player.CompareTag("Player"))
             {
+                
                 //获取人物的脚本，调用相关函数
-                PlayerController playerController = player.GetComponent<PlayerController>();
-                playerController.Collapsing(1f);
+                PlayerHurt playerHurt = player.GetComponent<PlayerHurt>();
+                playerHurt.Collapsing(1f);
             }
         }
         
         verticalAttackScope.gameObject.SetActive(false);
     }
     
+    //横划动画的启动
     void HorizontalAttack()
     {
         anim.SetTrigger("HorizontalAttack");
     }
+    //横划动画开始时调用
+    void HorizontalAttackEffect()
+    {
+        //开启碰撞体检测
+        horizontalAttackScope.SetActive(true);
+    }
+    //横划动画结束时调用
+    void CloseHorizontalAttackScope()
+    {
+        horizontalAttackScope.SetActive(false);
+    }
 
-
+    //上挑动画的启动
     void UpwardAttack()
     {
         anim.SetTrigger("UpwardAttack");
+    }
+    
+    //锤击动画的启动
+    void HammerBlow()
+    {
+        anim.SetTrigger("HammerBlow");
+    }
+    //锤击的范围
+    void HammerBlowRight()
+    {
+        rightCircle.gameObject.SetActive(true);
+    }
+    void HammerBlowLeft()
+    {
+        leftCircle.gameObject.SetActive(true);
+    }
+    void CloseRightCircle()
+    {
+        rightCircle.gameObject.SetActive(false);   
+    }
+    void CloseLeftCircle()
+    {
+        leftCircle.gameObject.SetActive(false);
     }
 }
