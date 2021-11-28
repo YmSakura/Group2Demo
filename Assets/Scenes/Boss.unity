@@ -270,6 +270,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 973984507, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9667904
+      objectReference: {fileID: 0}
+    - target: {fileID: 973984507, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.25557062
+      objectReference: {fileID: 0}
+    - target: {fileID: 973984507, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 389.615
+      objectReference: {fileID: 0}
     - target: {fileID: 292192419263362676, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -318,5 +330,102 @@ PrefabInstance:
       propertyPath: m_Name
       value: PLAYER0
       objectReference: {fileID: 0}
+    - target: {fileID: 5162435188336898411, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.1998663
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162435188336898411, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.021086877
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162435188336898411, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9861178
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162435188336898411, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.1660475
+      objectReference: {fileID: 0}
+    - target: {fileID: 7613290002090157742, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.000035302543
+      objectReference: {fileID: 0}
+    - target: {fileID: 7613290002090157742, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+--- !u!1 &8599526541393525438 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2366143616908411843, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+  m_PrefabInstance: {fileID: 8599526541393525437}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8599526541393525439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8599526541393525438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71529e389015d3b49ac3200b4e477e17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthTimer: 0
+  healthTimerSet: 5
+  collapseTimer: 0
+  collapseTimerSet: 0
+  healthSet: 120
+  healthIncrease: 1
+--- !u!114 &8599526541393525440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8599526541393525438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f50756d2d574f9429af61f3d8df0e49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSpeed: 1.5
+  runSpeed: 2.5
+  rollSpeed: 0.5
+  defendSpeed: 0.5
+  stayingPowerSet: 100
+  defendPower: 8
+  damage: 0
+  isHurt: 0
+  stayingPowerTimer: 0
+  runTimer: 0
+  defendTimer: 0
+  stayingPowerTimerSet: 1
+  runTimerSet: 0.1
+  runCost: 1
+  rollCost: 34
+  defendCost: 0
+  stayingPowerIncrease: 20
+--- !u!50 &8599526541393525441
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8599526541393525438}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
