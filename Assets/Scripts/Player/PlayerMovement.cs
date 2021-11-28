@@ -10,15 +10,16 @@ public class PlayerMovement : MonoBehaviour
     private Animator anim;
 
     private float inputX, inputY;
+    private float moveSpeed;
+
 
     [Header("人物设置")]
     [SerializeField] public float walkSpeed = 1.5f, runSpeed = 2.5f, rollSpeed = 0.5f, defendSpeed = 0.5f;
     [SerializeField] public int stayingPowerSet = 100, defendPower = 8; // 耐力， 防御值
     public int damage;
     private int stayingPower; // 耐力， 防御值
-    private bool isRunning, isDefending; // 跑步行走动画切换条件
     public bool isHurt;
-    private bool rollLock;//翻滚锁定
+    private bool rollLock, shieldState;//翻滚锁定, 举盾状态
 
     [Header("计时器&耐力消耗&回复")]
     //分别 耐力回复计时器， 跑步计时器
@@ -27,6 +28,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float stayingPowerTimerSet = 1, runTimerSet = 0.1f;
     public int runCost = 1, rollCost = 34, defendCost;
     public int stayingPowerIncrease = 20;
+
+    [Header("外部数据测试")]
+    public int getDamage = 1;
 
     // Start is called before the first frame update
     void Awake()
@@ -43,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         Moving();
+        DefendingAnim();
     }
 
 
@@ -53,32 +58,35 @@ public class PlayerMovement : MonoBehaviour
         inputY = Input.GetAxisRaw("Vertical");
         Vector2 moveInput = new Vector2(inputX, inputY).normalized;//标准化向量长度
 
-        //跑步
-        if (!rollLock && Input.GetKey(KeyCode.LeftShift))
+        //行动
+        if (!rollLock && (inputX != 0 || inputY != 0))
         {
-            if (stayingPower >= runCost)
+            //跑步
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-                isRunning = true;
-                rb.velocity = moveInput * runSpeed;
-                if (runTimer != 0)
+                if (stayingPower >= runCost)
                 {
-                    runTimer -= Time.deltaTime;
-                    if (runTimer <= 0)
+                    rb.velocity = moveInput * runSpeed;
+                    moveSpeed = System.Math.Abs(rb.velocity.x) > System.Math.Abs(rb.velocity.y) ? System.Math.Abs(rb.velocity.x) : System.Math.Abs(rb.velocity.y);
+                    anim.SetFloat("moveSpeed", moveSpeed);
+                    if (runTimer != 0)
                     {
-                        runTimer = runTimerSet;
-                        stayingPower -= runCost;
+                        runTimer -= Time.deltaTime;
+                        if (runTimer <= 0)
+                        {
+                            runTimer = runTimerSet;
+                            stayingPower -= runCost;
+                        }
                     }
                 }
             }
-        }
 
-        //行走
-        else
-        {
-            if (!rollLock)
+            //行走
+            else
             {
-                isRunning = false;
                 rb.velocity = moveInput * walkSpeed;
+                moveSpeed = System.Math.Abs(rb.velocity.x) > System.Math.Abs(rb.velocity.y) ? System.Math.Abs(rb.velocity.x) : System.Math.Abs(rb.velocity.y);
+                anim.SetFloat("moveSpeed", moveSpeed);
                 if (stayingPower < stayingPowerSet)
                 {
                     if (stayingPowerTimer != 0)
@@ -99,6 +107,18 @@ public class PlayerMovement : MonoBehaviour
                     }
                 }
             }
+            anim.SetBool("isMoving", true);
+            anim.SetBool("isIdling", false);
+        }
+
+        //站立
+        else
+        {
+            rb.velocity = Vector2.zero;
+            moveSpeed = 0;
+            anim.SetFloat("moveSpeed", moveSpeed);
+            anim.SetBool("isMoving", false);
+            anim.SetBool("isIdling", true);
         }
 
         //翻滚
@@ -107,6 +127,7 @@ public class PlayerMovement : MonoBehaviour
             if (stayingPower >= rollCost)
             {
                 rollLock = true;
+                anim.SetBool("rollLock", true);
                 coll.enabled = false;
                 stayingPower -= runCost;
                 rb.velocity = moveInput * rollSpeed;
@@ -115,7 +136,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //防御
-        //Defending(moveInput, getDamage);    缺少目标的受到的伤害数值；
+        Defending(moveInput, getDamage);    //缺少目标的受到的伤害数值；
 
 
     }
@@ -125,7 +146,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rollLock = false;
         coll.enabled = true;
-        anim.SetBool("isRolling", false);
+        anim.SetBool("rollLock", false);
     }
 
     //普通防御（动画+动画事件）
@@ -133,14 +154,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (stayingPower > 0 && Input.GetMouseButton(1))
         {
-            isDefending = true;
-            anim.SetBool("isDefending", isDefending);
+            shieldState = true;
+            anim.SetBool("shieldState", shieldState);
 
         }
-        else if (stayingPower <= 0 || !Input.GetMouseButton(1))
+        else if (stayingPower <= 0 || !Input. GetMouseButton(1))
         {
-            isDefending = false;
-            anim.SetBool("isDefending", isDefending);
+            shieldState = false;
+            anim.SetBool("shieldState", shieldState);
         }
     }
     void Defending(Vector2 moveInput, int getDamage)
