@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class BossController : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class BossController : MonoBehaviour
     [Header("技能检测相关组件")]
     public Transform verticalAttackScope;
     public GameObject horizontalAttackScope;
-    public Transform player;
+    public Transform playerTransform;
     public LayerMask playerLayer;
 
     [Header("锤击检测组件")] 
@@ -22,9 +23,9 @@ public class BossController : MonoBehaviour
     
     [Header("移动相关")]
     public float moveSpeed;
-    public Transform leftpoint, rightpoint;
-    private bool faceRight = true;
-    private float leftX, rightX;
+    public Transform[] patrolPoint;
+    public int patrolPosition;
+    public LayerMask bossLayer;
 
 
     void Awake()
@@ -34,12 +35,6 @@ public class BossController : MonoBehaviour
         rightCircle = hammerBlowScope.transform.Find("RightCircle");
         leftCircle = hammerBlowScope.transform.Find("LeftCircle");
         
-        //获取子物体坐标
-        leftX = leftpoint.position.x;
-        rightX = rightpoint.position.x;
-        //销毁子物体
-        Destroy(leftpoint.gameObject);
-        Destroy(rightpoint.gameObject);
         
         //默认不开启技能范围检测
         verticalAttackScope.gameObject.SetActive(false);
@@ -50,30 +45,25 @@ public class BossController : MonoBehaviour
     
     void Update()
     {
-        Movement();
-        HammerBlow();
+        PatrolMove();
         anim.SetFloat("walkSpeed",moveSpeed);
+        anim.SetInteger("RandomInt",Random.Range(1,3));
     }
-    
-    //简单移动
-    void Movement()
+
+    //巡逻
+    void PatrolMove()
     {
-        if(faceRight)
+        //巡逻过程中以巡逻点为target更改朝向
+        FlipTo(patrolPoint[patrolPosition]);
+        transform.position = Vector2.MoveTowards(transform.position, patrolPoint[patrolPosition].position,
+            moveSpeed * Time.deltaTime);
+        //到达一个巡逻点之后切换到下一个巡逻点
+        if (Physics2D.OverlapCircle(patrolPoint[patrolPosition].position,1f,bossLayer))
         {
-            rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
-            if(transform.position.x > rightX)
+            patrolPosition++;
+            if (patrolPosition >= patrolPoint.Length)
             {
-                transform.localScale = new Vector3(-1, 1, 1);
-                faceRight = false;
-            }
-        }
-        else
-        {
-            rb.velocity = new Vector2(-moveSpeed, rb.velocity.y);
-            if(transform.position.x < leftX)
-            {
-                transform.localScale = new Vector3(1, 1, 1);
-                faceRight = true;
+                patrolPosition = 0;
             }
         }
     }
@@ -86,16 +76,7 @@ public class BossController : MonoBehaviour
     //竖劈蓄力时boss的转向
     void VerticalAttackDirection()
     {
-        //如果朝右并且人物在boss左侧就转向
-        if (faceRight && player.position.x < transform.position.x)
-        {
-            Debug.Log("boss向左转");
-            transform.localScale = new Vector3(-1, 1, 1);
-        }else if (!faceRight && player.position.x > transform.position.x)
-        {
-            Debug.Log("boss向右转");
-            transform.localScale = new Vector3(1, 1, 1);
-        }
+        FlipTo(playerTransform);
     }
     //竖劈的效果，竖劈动画时通过event调用
     void VerticalAttackEffect()
@@ -105,10 +86,10 @@ public class BossController : MonoBehaviour
         Transform leftTop = verticalAttackScope.GetChild(0);
         Transform rightBottom = verticalAttackScope.GetChild(1);
         
-        Collider2D player;
+        Collider2D playerCollider;  //玩家的碰撞体
         try
         {
-            player = Physics2D.OverlapArea(leftTop.position, rightBottom.position);
+            playerCollider = Physics2D.OverlapArea(leftTop.position, rightBottom.position, playerLayer);
         }
         catch (Exception e)
         {
@@ -117,15 +98,10 @@ public class BossController : MonoBehaviour
             throw;
         }
         
-        //如果检测到player就调用其自身的受伤函数
-        if (player)
+        if (playerCollider)
         {
-            if (player.CompareTag("Player"))
-            {
-                //获取人物的脚本，调用相关函数
-                PlayerHurt playerHurt = player.GetComponent<PlayerHurt>();
-                playerHurt.Collapsing(1f);
-            }
+            PlayerHurt playerHurt = CollisionCheck.PlayerCheck(playerCollider);
+            playerHurt.Collapsing(1);
         }
         
         verticalAttackScope.gameObject.SetActive(false);
@@ -139,19 +115,12 @@ public class BossController : MonoBehaviour
     //横划动画开始时调用
     void HorizontalAttackEffect()
     {
-        //开启碰撞体检测
         horizontalAttackScope.SetActive(true);
     }
     //横划动画结束时调用
     void CloseHorizontalAttackScope()
     {
         horizontalAttackScope.SetActive(false);
-    }
-
-    //上挑动画的启动
-    void UpwardAttack()
-    {
-        anim.SetTrigger("UpwardAttack");
     }
     
     //锤击动画的启动
@@ -186,8 +155,25 @@ public class BossController : MonoBehaviour
         armCollider.enabled = false;
     }
 
-    void ExplodeAttack()
+    //魔法攻击
+    //全图范围内获取Player坐标，生成一个红色圆圈，延迟爆炸
+    void MagicAttack()
     {
-        
+        anim.SetTrigger("MagicAttack");
+    }
+
+    //以target为目标更改朝向
+    void FlipTo(Transform target)
+    {
+        if (target != null)
+        {
+            if (target.position.x > transform.position.x)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+            }else if (target.position.x < transform.position.x)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+            }
+        }
     }
 }
