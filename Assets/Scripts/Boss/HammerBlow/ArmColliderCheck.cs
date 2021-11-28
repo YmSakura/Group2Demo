@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//锤击右侧范围
-public class HammerBlowRight : MonoBehaviour
+public class ArmColliderCheck : MonoBehaviour
 {
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
         PlayerHurt playerHurt = CollisionCheck.PlayerCheck(other);
-        playerHurt.Collapsing(1);
+        //人物被击退
+        playerHurt.Repeled(1,1);
     }
 }

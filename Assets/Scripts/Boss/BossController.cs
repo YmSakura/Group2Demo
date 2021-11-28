@@ -13,9 +13,11 @@ public class BossController : MonoBehaviour
     public Transform verticalAttackScope;
     public GameObject horizontalAttackScope;
     public Transform player;
+    public LayerMask playerLayer;
 
     [Header("锤击检测组件")] 
     public GameObject hammerBlowScope;
+    public Collider2D armCollider;
     private Transform rightCircle, leftCircle;
     
     [Header("移动相关")]
@@ -43,6 +45,7 @@ public class BossController : MonoBehaviour
         verticalAttackScope.gameObject.SetActive(false);
         horizontalAttackScope.SetActive(false);
         //hammerBlowScope.SetActive(false);
+        armCollider.enabled = false;
     }
     
     void Update()
@@ -156,7 +159,7 @@ public class BossController : MonoBehaviour
     {
         anim.SetTrigger("HammerBlow");
     }
-    //锤击的范围
+    //锤击左右圆圈的碰撞体
     void HammerBlowRight()
     {
         rightCircle.gameObject.SetActive(true);
@@ -172,5 +175,19 @@ public class BossController : MonoBehaviour
     void CloseLeftCircle()
     {
         leftCircle.gameObject.SetActive(false);
+    }
+    //横扫的碰撞体
+    void OpenArmCollider()
+    {
+        armCollider.enabled = true;
+    }
+    void CloseArmCollider()
+    {
+        armCollider.enabled = false;
+    }
+
+    void ExplodeAttack()
+    {
+        
     }
 }
