@@ -6,48 +6,165 @@ using Random = UnityEngine.Random;
 
 public class BossController : MonoBehaviour
 {
+    [Header("BOSS属性")] 
+    [SerializeField]
+    private float healthValue = 100;
+    public float AttackCd = 2f;
+    private bool isHealthDown = true;
+    private bool isIdle, isWalk, isAttacked, isWait, isDie;
+    
     [Header("自身组件")]
     private Animator anim;
     private Rigidbody2D rb;
     
     [Header("技能检测相关组件")]
-    public Transform verticalAttackScope;
-    public GameObject horizontalAttackScope;
-    public Transform playerTransform;
-    public LayerMask playerLayer;
+    public Transform verticalAttackScope;   //竖劈的范围显示（有Sprite，通过overlap检测）
+    public GameObject horizontalAttackScope;//横划的范围显示（通过碰撞体检测）
+    public GameObject magicAttackScope;     //魔法攻击点的父物体
+    private Transform[] magicCircle;        //魔法攻击具体位置
+    public Transform playerTransform;       //player的位置
+    public LayerMask playerLayer;           //player的Layer
+    private String horizontalAttack = "HorizontalAttack";
+    private String verticalAttack = "VerticalAttack";
+    private String hammerBlow = "HammerBlow";
+    private String magicAttack = "MagicAttack";
 
     [Header("锤击检测组件")] 
-    public GameObject hammerBlowScope;
-    public Collider2D armCollider;
-    private Transform rightCircle, leftCircle;
+    public GameObject hammerBlowScope;          //锤击范围
+    public Collider2D armCollider;              //横扫的碰撞体
+    private Transform rightCircle, leftCircle;  //锤击左右圆形
     
     [Header("移动相关")]
-    public float moveSpeed;
-    public Transform[] patrolPoint;
-    public int patrolPosition;
-    public LayerMask bossLayer;
+    public float moveSpeed;             //移动速度
+    public Transform[] patrolPoint;     //巡逻点数组
+    public int patrolPosition;          //巡逻点下标
+    public LayerMask bossLayer;         //Boss的Layer
 
-
+    [Header("范围检测")] 
+    public Transform attackScope;
+    private bool isInAttackScope;
+    private bool isInChaseScope;
+    private float attackScopeRadius = 20f;  //攻击范围圆形的半径
+    
     void Awake()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         rightCircle = hammerBlowScope.transform.Find("RightCircle");
         leftCircle = hammerBlowScope.transform.Find("LeftCircle");
-        
+        magicCircle = magicAttackScope.GetComponentsInChildren<Transform>();
         
         //默认不开启技能范围检测
         verticalAttackScope.gameObject.SetActive(false);
         horizontalAttackScope.SetActive(false);
-        //hammerBlowScope.SetActive(false);
+        for (int i = 1; i < 4; i++)
+        {
+            magicCircle[i].gameObject.SetActive(false);
+        }
         armCollider.enabled = false;
     }
     
     void Update()
     {
-        PatrolMove();
-        anim.SetFloat("walkSpeed",moveSpeed);
-        anim.SetInteger("RandomInt",Random.Range(1,3));
+        if (!isIdle)
+        {
+            PatrolMove();
+        }
+        IsInAttackScope();
+        UpdateStatus();
+        CloseAttack();
+        MagicAttack();
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            BeAttacked(10f);
+        }
+        //anim.SetInteger("RandomInt",Random.Range(0,4));
+    }
+
+    void UpdateStatus()
+    {
+        anim.SetFloat("WalkSpeed",moveSpeed);
+        anim.SetFloat("HealthValue",healthValue);
+        anim.SetBool("IsAttacked", isAttacked);
+        anim.SetBool("IsIdle",isIdle);
+        //anim.SetBool("isWalk",isWalk);
+    }
+
+    void BeAttacked(float damageValue)
+    {
+        //只有在idle和walk状态下才可以播放受击动画
+        if (isIdle || isWalk)
+        {
+            isAttacked = true;
+            //这里要直接调用一下受击的动画
+            anim.SetBool("IsAttacked", isAttacked);
+        }
+        
+        healthValue -= damageValue;
+        if (healthValue < 0.1f)
+        {
+            isDie = true;
+            anim.SetBool("StartDieAnim", true);
+        }
+    }
+
+    void CloseDieAnim()
+    {
+        anim.SetBool("StartDieAnim", false);
+    }
+
+    void DieState()
+    {
+        anim.SetBool("IsDie",isDie);
+    }
+    
+    //受击动画结束时调用
+    public void CloseBeAttacked()
+    {
+        isAttacked = false;
+    }
+    
+    
+    //画出攻击范围
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(attackScope.position, attackScopeRadius);
+        Gizmos.DrawWireSphere(patrolPoint[patrolPosition].position,0.5f);
+    }
+
+    //检测玩家是否位于攻击范围内，Update中调用
+    void IsInAttackScope()
+    {
+        if (Physics2D.OverlapCircle(transform.position, 5f, playerLayer))
+            isInAttackScope = true;
+    }
+
+    //近距离攻击
+    void CloseAttack()
+    {
+        if (isInAttackScope)
+        {
+            isIdle = false;
+            isWalk = false;
+            //当玩家在boss攻击范围内时，随机释放横划、竖劈和锤击
+            anim.SetInteger("RandomInt",Random.Range(0,4));
+        }
+    }
+    
+    IEnumerator TimeWaiter(float waitSeconds)
+    {
+        Debug.Log("开始等待");
+        isIdle = true;
+        isWait = true;
+        yield return new WaitForSeconds(waitSeconds);
+        Debug.Log("等待完毕");
+        isWait = false;
+        isIdle = false;
+        patrolPosition++;
+        if (patrolPosition >= patrolPoint.Length)
+        {
+            patrolPosition = 0;
+        }
     }
 
     //巡逻
@@ -55,23 +172,27 @@ public class BossController : MonoBehaviour
     {
         //巡逻过程中以巡逻点为target更改朝向
         FlipTo(patrolPoint[patrolPosition]);
-        transform.position = Vector2.MoveTowards(transform.position, patrolPoint[patrolPosition].position,
-            moveSpeed * Time.deltaTime);
-        //到达一个巡逻点之后切换到下一个巡逻点
-        if (Physics2D.OverlapCircle(patrolPoint[patrolPosition].position,1f,bossLayer))
+        if (!isWait && !isDie)
         {
-            patrolPosition++;
-            if (patrolPosition >= patrolPoint.Length)
-            {
-                patrolPosition = 0;
-            }
+            isWalk = true;
+            transform.position = Vector2.MoveTowards(transform.position, patrolPoint[patrolPosition].position,
+                moveSpeed * Time.deltaTime);
+        }
+        
+        //到达一个巡逻点之后切换到下一个巡逻点
+        if (Physics2D.OverlapCircle(patrolPoint[patrolPosition].position,0.5f,bossLayer))
+        {
+            Debug.Log("已到达巡逻点");
+            
+            //到达巡逻点后等待一段时间再前往下一个巡逻点
+            StartCoroutine(TimeWaiter(5f));
         }
     }
 
     //竖劈动画的启动
     void VerticalAttack()
     {
-        anim.SetTrigger("VerticalAttack");
+        anim.SetTrigger(verticalAttack);
     }
     //竖劈蓄力时boss的转向
     void VerticalAttackDirection()
@@ -110,14 +231,13 @@ public class BossController : MonoBehaviour
     //横划动画的启动
     void HorizontalAttack()
     {
-        anim.SetTrigger("HorizontalAttack");
+        anim.SetTrigger(horizontalAttack);
     }
-    //横划动画开始时调用
-    void HorizontalAttackEffect()
+    //开启和关闭横划的检测范围(碰撞体)
+    void OpenHorizontalAttackScope()
     {
         horizontalAttackScope.SetActive(true);
     }
-    //横划动画结束时调用
     void CloseHorizontalAttackScope()
     {
         horizontalAttackScope.SetActive(false);
@@ -126,9 +246,9 @@ public class BossController : MonoBehaviour
     //锤击动画的启动
     void HammerBlow()
     {
-        anim.SetTrigger("HammerBlow");
+        anim.SetTrigger(hammerBlow);
     }
-    //锤击左右圆圈的碰撞体
+    //开启和关闭左右两侧圆形碰撞体
     void HammerBlowRight()
     {
         rightCircle.gameObject.SetActive(true);
@@ -145,7 +265,7 @@ public class BossController : MonoBehaviour
     {
         leftCircle.gameObject.SetActive(false);
     }
-    //横扫的碰撞体
+    //开启和关闭横扫的碰撞体
     void OpenArmCollider()
     {
         armCollider.enabled = true;
@@ -159,8 +279,40 @@ public class BossController : MonoBehaviour
     //全图范围内获取Player坐标，生成一个红色圆圈，延迟爆炸
     void MagicAttack()
     {
-        anim.SetTrigger("MagicAttack");
+        //当生命值下降到一定数值时释放
+        if (healthValue.Equals(50.0f) && isHealthDown)
+        {
+            anim.SetTrigger(magicAttack);
+        }
     }
+    void OpenMagicAttackScope(int i)
+    {
+        StartCoroutine(MagicAttackScope(i));
+    }
+    IEnumerator MagicAttackScope(int index)
+    {
+        //默认关闭碰撞体
+        Collider2D circleCollider = magicCircle[index].GetComponent<Collider2D>();
+        circleCollider.enabled = false;
+        //获取玩家坐标并显示圆形范围
+        magicCircle[index].position = playerTransform.position;
+        magicCircle[index].gameObject.SetActive(true);
+        //延时1s调用碰撞检测函数
+        yield return new WaitForSeconds(1f);
+        MagicAttackEffect(circleCollider);
+    }
+    //检测是否攻击到玩家
+    void MagicAttackEffect(Collider2D circleCollider)
+    {
+        circleCollider.enabled = true;
+    }
+    //关闭圆形范围显示和碰撞体
+    void CloseMagicAttackScope(int index)
+    {
+        magicCircle[index].GetComponent<Collider2D>().enabled = false;
+        magicCircle[index].gameObject.SetActive(false);
+    }
+    
 
     //以target为目标更改朝向
     void FlipTo(Transform target)

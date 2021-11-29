@@ -10243,7 +10243,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.5
-    functionName: HorizontalAttackEffect
+    functionName: OpenHorizontalAttackScope
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
