@@ -13,8 +13,8 @@ public class PlayerMovement : MonoBehaviour
     private float moveSpeed;
 
     [Header("人物设置")]
-    [SerializeField] public float walkSpeed = 1.5f, runSpeed = 2.5f, rollSpeed = 0.5f, defendSpeed = 0.5f;
-    [SerializeField] public int enduranceSet  = 100, defendPower = 8; // 耐力， 防御值
+    [SerializeField] public float walkSpeed = 50, runSpeed = 100, rollSpeed = 0.5f, defendSpeed = 20;
+    [SerializeField] public int enduranceSet = 100, defendPower = 8; // 耐力， 防御值
     public int damage;
     private int endurance; // 耐力
     public bool isHurt;
@@ -59,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
 
         //行动
         if (!rollLock && (inputX != 0 || inputY != 0))
-        {
+        { 
             //跑步
             if (Input.GetKey(KeyCode.LeftShift))
             {
