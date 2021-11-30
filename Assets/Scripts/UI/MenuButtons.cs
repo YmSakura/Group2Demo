@@ -34,6 +34,7 @@ public class MenuButtons : MonoBehaviour
     }
 
     public void CloseIntroduction()
+
     {
         menuButton.SetActive(true);
         Introduction.SetActive(false);
