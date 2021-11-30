@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 72e4a4c2b8ccb0c469376b498baa830c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - audioMixer: {fileID: 24100000, guid: 764275920b3c9944ca31b9094c3017f1, type: 2}
+  - MusicAudioSource: {instanceID: 0}
+  - SFXAudioSource: {instanceID: 0}
+  - playerAttackAudio: {instanceID: 0}
+  - playerHurtAudio: {instanceID: 0}
+  - playerDefenceAudio: {instanceID: 0}
+  - bossAttackAudio: {instanceID: 0}
+  - bossHurtAudio: {instanceID: 0}
+  - bossAudio: {instanceID: 0}
+  - BackgroundMusic: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
