@@ -9,6 +9,7 @@ public class HammerBlowRight : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         PlayerHurt playerHurt = CollisionCheck.PlayerCheck(other);
-        playerHurt.Collapsing(1);
+        if(playerHurt)
+            playerHurt.Collapsing(1);
     }
 }
