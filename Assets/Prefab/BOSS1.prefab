@@ -922,7 +922,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 1.0770013, y: 0.032039344}
@@ -1441,7 +1441,10 @@ MonoBehaviour:
   isDie: 0
   isChase: 0
   isPatrol: 0
+  isAttack: 0
   isInSecondStage: 0
+  bossAt: {fileID: 8432954910019185530}
+  head: {fileID: 1429639499629449652}
   verticalAttackScope: {fileID: 8432954911509616700}
   horizontalAttackScope: {fileID: 8432954911507228171}
   magicAttackScope: {fileID: 0}
@@ -1463,6 +1466,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   attackScope: {fileID: 8432954911528974991}
+  isInAttackScope: 0
 --- !u!70 &8432954911146652397
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -3379,7 +3383,7 @@ CapsuleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0.13967659, y: -0.000000016650745}
@@ -3657,7 +3661,7 @@ PolygonCollider2D:
   m_Points:
     m_Paths:
     - - {x: -5.6285744, y: 20.14304}
-      - {x: -11.995979, y: -0.28540707}
+      - {x: -19.763557, y: -2.7222948}
       - {x: -2.7645535, y: -18.066658}
       - {x: 7.0103645, y: -20.664934}
       - {x: 0.6039438, y: 25.604956}
@@ -3698,8 +3702,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8432954911509616701}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30.25, y: 7.03, z: 0}
-  m_LocalScale: {x: 41.69911, y: 15.662925, z: 1}
+  m_LocalPosition: {x: 29.3362, y: 7.03, z: 0}
+  m_LocalScale: {x: 43.525528, y: 15.662925, z: 1}
   m_Children:
   - {fileID: 8432954910636815447}
   - {fileID: 8432954909812078869}
@@ -3774,7 +3778,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8432954911513922075
 Transform:
   m_ObjectHideFlags: 0
