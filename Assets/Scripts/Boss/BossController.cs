@@ -6,30 +6,41 @@ using Random = UnityEngine.Random;
 
 public class BossController : MonoBehaviour
 {
-    [Header("BOSS属性")] 
+    [Header("BOSS属性")]
+    private float healthValue = 200f;           //Boss总血量
+    private float secondStageHealth;            //进入第二阶段的血量，在awake初始化，为总血量的一半
+    private int secondStageCount;               //进入半血的次数，只有第一次掉到半血才进入第二阶段，这算是个临时变量
+    public float AttackCd = 2f;                 //技能的CD
+    public float AttackCdCount;                 //技能的计时
+    private bool isHealthDown = true;           //血量是否下降
+    private float droppedHealth = 20f;          //固定血量释放魔法攻击
     [SerializeField]
-    private float healthValue = 100;
+    private bool isIdle, isWalk, isAttacked, isWait, isDie, isChase, isPatrol, isAttack, isInSecondStage;
 
-    private float secondStageHealth = 50;
-    private int secondStageCount;
-    public float AttackCd = 2f;
-    private bool isHealthDown = true;
-    [SerializeField]
-    private bool isIdle, isWalk, isAttacked, isWait, isDie, isChase, isPatrol, isInSecondStage;
-
-    [Header("自身组件")] public GameObject head;
-    private Animator anim;
+    [Header("技能伤害")] 
+    private float horizontalAttackDamage = 18f;
+    private float verticalAttackDamage = 24f;
+    private float hammerBlowDamage = 18f;
+    private float magicAttackDamage = 20f;
+    
+    [Header("自身组件")] 
+    public Transform bossAt;            //Boss的实际位置
+    public GameObject head;             //Boss的南瓜头
+    private Animator anim;              
     private Rigidbody2D rb;
     
     [Header("技能检测相关组件")]
-    public Transform verticalAttackScope;   //竖劈的范围显示（有Sprite，通过overlap检测）
-    public GameObject horizontalAttackScope;//横划的范围显示（通过碰撞体检测）
-    public GameObject magicAttackScope;     //魔法攻击点的父物体
-    private Transform[] magicCircle;        //魔法攻击具体位置
-    public GameObject chaseArea;
-    private Transform leftChasePoint, rightChasePoint;
-    public Transform playerTransform;       //player的位置
-    public LayerMask playerLayer;           //player的Layer
+    public Transform verticalAttackScope;               //竖劈的范围显示（有Sprite，通过overlap检测）
+    public GameObject horizontalAttackScope;            //横划的范围显示（通过碰撞体检测）
+    public GameObject magicAttackScope;                 //魔法攻击点的父物体
+    private Transform[] magicCircle;                    //魔法攻击具体位置
+    public GameObject chaseArea;                        //追击范围
+    private Transform leftChasePoint, rightChasePoint;  //追击范围矩形的顶点
+    public Transform playerTransform;                   //player的实际位置
+    public Transform playerAtLeft, playerAtRight;       //player的左右点位
+    public LayerMask playerLayer;                       //player的Layer
+    
+    [Header("技能名称")]
     private String horizontalAttack = "HorizontalAttack";
     private String verticalAttack = "VerticalAttack";
     private String hammerBlow = "HammerBlow";
@@ -38,7 +49,7 @@ public class BossController : MonoBehaviour
 
     [Header("锤击检测组件")] 
     public GameObject hammerBlowScope;          //锤击范围
-    public Collider2D armCollider;              //横扫的碰撞体
+    public Collider2D armCollider;              //横扫的碰撞体(骨骼绑定)
     private Transform rightCircle, leftCircle;  //锤击左右圆形
     
     [Header("移动相关")]
@@ -48,21 +59,32 @@ public class BossController : MonoBehaviour
     public LayerMask bossLayer;         //Boss的Layer
 
     [Header("范围检测")] 
-    public Transform attackScope;
-    [SerializeField]
-    private bool isInAttackScope;
-    private bool isInChaseScope;
-    private float attackScopeRadius = 15f;  //攻击范围圆形的半径
+    public Transform attackScope;           //近身攻击范围
+    public bool isInAttackScope;            //是否处于近身攻击范围
+    public bool canAttack, canMagicAttack;  //是否可以进行近距离攻击
+    private bool isInChaseScope;            //是否处于追击范围               
+    private bool canHammerBlow;             //是否可以进行锤击
+    private float attackScopeRadius = 30f;  //攻击范围圆形的半径
+    private int closeAttackCount;           //进行近身攻击的次数
+    private float xDistance, yDistance;     
     
     void Awake()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        //锤击范围
         rightCircle = hammerBlowScope.transform.Find("RightCircle");
         leftCircle = hammerBlowScope.transform.Find("LeftCircle");
+        //魔法攻击
         magicCircle = magicAttackScope.GetComponentsInChildren<Transform>();
+        //追击区域
         leftChasePoint = chaseArea.transform.GetChild(0);
         rightChasePoint = chaseArea.transform.GetChild(1);
+        //默认以playerAtLeft作为player的位置
+        playerTransform = playerAtLeft;
+
+        //初始化第二阶段血量
+        secondStageHealth = healthValue / 2;
         
         //默认不开启技能范围检测
         verticalAttackScope.gameObject.SetActive(false);
@@ -76,10 +98,7 @@ public class BossController : MonoBehaviour
     
     void Update()
     {
-        if (!isIdle)
-        {
-            PatrolMove();
-        }
+        PatrolMove();
         IsInAttackScope();
         UpdateStatus();
         CloseAttack();
@@ -89,92 +108,7 @@ public class BossController : MonoBehaviour
         {
             BeAttacked(10f);
         }
-        //anim.SetInteger("RandomInt",Random.Range(0,4));
     }
-    
-    
-    void UpdateStatus()
-    {
-        anim.SetFloat("WalkSpeed",moveSpeed);
-        anim.SetFloat("HealthValue",healthValue);
-        anim.SetBool("IsAttacked", isAttacked);
-        anim.SetBool("IsIdle",isIdle);
-        //anim.SetBool("isWalk",isWalk);
-        anim.SetBool("IsDie",isDie);
-        
-    }
-
-    void HeadHidden()
-    {
-        head.SetActive(false);
-    }
-    
-    void BeAttacked(float damageValue)
-    {
-        //只有在idle和walk状态下才可以播放受击动画
-        if (isIdle || isWalk)
-        {
-            isAttacked = true;
-            //这里要直接调用一下受击的动画
-            anim.SetBool("IsAttacked", isAttacked);
-        }
-        
-        //减少血量并判断是否死亡
-        healthValue -= damageValue;
-        if (healthValue.Equals(secondStageHealth) && secondStageCount.Equals(0))
-        {
-            anim.SetTrigger(headFly);
-            secondStageCount++;
-        }
-        
-        if (healthValue < 0.1f)
-        {
-            isDie = true;
-            //开启播放死亡动画，动画开始时调用设置StartDieAnim为false，避免循环播放
-            anim.SetBool("StartDieAnim", true);
-        }
-    }
-    void CloseDieAnim()
-    {
-        anim.SetBool("StartDieAnim", false);
-    }
-
-    //检测玩家是否处于追击范围
-    public void UpdateChaseStatus()
-    {
-        if ( Physics2D.OverlapArea(leftChasePoint.position, rightChasePoint.position, playerLayer) )
-        {
-            isChase = true;
-            isPatrol = false;
-            //Debug.Log("开始追击");
-        }
-        else
-        {
-            isChase = false;
-            Debug.Log("结束追击");
-            isPatrol = true;
-        }
-    }
-    
-    void ChasePlayer()
-    {
-        if (isChase && !isDie)
-        {
-            FlipTo(playerTransform);
-            isWalk = true;
-            transform.position = Vector2.MoveTowards(transform.position, playerTransform.position,
-                moveSpeed * Time.deltaTime);
-        }
-    }
-
-    
-    
-    //受击动画结束时调用
-    public void CloseBeAttacked()
-    {
-        isAttacked = false;
-    }
-    
     
     //画出一些范围
     private void OnDrawGizmos()
@@ -184,52 +118,240 @@ public class BossController : MonoBehaviour
         //巡逻点判定范围
         Gizmos.DrawWireSphere(patrolPoint[patrolPosition].position,0.5f);
     }
+    
+    
+    void UpdateStatus()
+    {
+        anim.SetFloat("HealthValue", healthValue);
+        anim.SetBool("IsAttacked", isAttacked);
+        anim.SetBool("IsIdle",isIdle);
+        anim.SetBool("IsWalk",isWalk);
+        anim.SetBool("IsDie",isDie);
+        UpdateChaseStatus();
+        UpdatePlayerTransform();
+    }
+
+    //被攻击时调用
+    void BeAttacked(float damageValue)
+    {
+        //只有在idle和walk状态下才可以播放受击动画
+        if (isIdle || isWalk)
+        {
+            isAttacked = true;
+            //这里要直接调用一下受击的动画来显示受伤
+            anim.SetBool("IsAttacked", isAttacked);
+        }
+        
+        //减少血量
+        healthValue -= damageValue;
+        
+        if (isInSecondStage)
+        {
+            //进入第二阶段判定释放魔法攻击的血量
+            droppedHealth -= damageValue;
+            if (droppedHealth <= 0)
+            {
+                canMagicAttack = true;
+            }
+        }
+        
+        //判断是否进入第二阶段
+        if (healthValue < secondStageHealth && secondStageCount.Equals(0))
+        {
+            //释放扔头技能
+            anim.SetTrigger(headFly);
+            isInSecondStage = true;
+            //为了确保只进入一次第二阶段
+            secondStageCount++;
+            //第二阶段属性增益
+            moveSpeed += 20;
+            horizontalAttackDamage += 5;
+            verticalAttackDamage += 5;
+            magicAttackDamage += 5;
+            hammerBlowDamage += 5;
+        }
+        
+        //判断是否死亡
+        if (healthValue < 0.1f)
+        {
+            //更新死亡状态
+            isDie = true;
+            //开启播放死亡动画，动画结束时设置StartDieAnim为false，避免循环播放
+            anim.SetBool("StartDieAnim", true);
+        }
+    }
+    //死亡动画结束时调用，为了只播放一次死亡动画
+    void CloseDieAnim()
+    {
+        anim.SetBool("StartDieAnim", false);
+    }
+
+    //检测玩家是否处于追击范围
+    public void UpdateChaseStatus()
+    {
+        if (!isInAttackScope && !isAttack && !isAttacked)
+        {
+            //如果玩家位于追击范围内就进行追击，停止巡逻
+            if (Physics2D.OverlapArea(leftChasePoint.position, rightChasePoint.position, playerLayer) )
+            {
+                isChase = true;
+                isPatrol = false;
+            }
+            else
+            {
+                //如果玩家逃出追击范围就停止追击，开始巡逻
+                isChase = false;
+                isPatrol = true;
+            }
+        }
+    }
+    
+    void ChasePlayer()
+    {
+        //当玩家处于追击范围内 并且位于攻击范围外（并且不在放技能时）才可以追击
+        if (isChase && !isDie && !isInAttackScope && !isAttack && !isAttacked)
+        {
+            FlipTo(playerTransform);
+            isWalk = true;
+            transform.position = Vector2.MoveTowards(transform.position, playerTransform.position,
+                moveSpeed * Time.deltaTime);
+        }
+    }
+    
+    //受击动画结束时调用，关闭被攻击状态
+    public void CloseBeAttacked()
+    {
+        isAttacked = false;
+    }
+    
+    
 
     //检测玩家是否位于攻击范围内，Update中调用
     void IsInAttackScope()
     {
-        if (Physics2D.OverlapCircle(transform.position, attackScopeRadius, playerLayer))
+        yDistance = Mathf.Abs(playerTransform.position.y - bossAt.position.y);
+        xDistance = Mathf.Abs(playerTransform.position.x - bossAt.position.x);
+        if (Physics2D.OverlapCircle(attackScope.position, attackScopeRadius, playerLayer))
         {
-            //Debug.Log("玩家在攻击范围内");
+            //只要进入攻击范围，就停止chase，通过内部函数来追击
             isInAttackScope = true;
-            //如果玩家已经处于攻击范围内，则停止追击，开始攻击玩家
             isChase = false;
+            Debug.Log(yDistance);
+            //如果玩家与boss的垂直距离大于指定距离，boss就向垂直方向移动
+            if (yDistance > 5f)
+            {
+                canAttack = false;
+                //释放技能时无法移动
+                if (!isAttack)
+                {
+                    FlipTo(playerTransform);
+                    isWalk = true;
+                    transform.position = Vector2.MoveTowards(transform.position,
+                        new Vector2(transform.position.x, playerTransform.position.y - 2f),
+                        moveSpeed * Time.deltaTime);
+                }
+            }else if (yDistance <= 5f && xDistance <= attackScopeRadius)
+            {
+                //x距离足够小时才可以释放锤击
+                if (xDistance <= 10f)
+                {
+                    canHammerBlow = true;
+                }
+                canAttack = true;
+            }
         }
         else
         {
             isInAttackScope = false;
-            //如果玩家不在攻击范围内，才检测玩家是否处于追击范围
-            UpdateChaseStatus();
+            canAttack = false;
+            if (xDistance <= attackScopeRadius + 20f)
+            {
+                
+            }
+            //当人物离开攻击范围时重置cd
+            closeAttackCount = 0;
         }
 
     }
-
-    //近距离攻击
+    //近距离攻击(横划竖劈锤击)，Update中调用
     void CloseAttack()
     {
-        if (isInAttackScope)
+        if (canAttack)
         {
-            isIdle = false;
-            isWalk = false;
-            //当玩家在boss攻击范围内时，随机释放横划、竖劈和锤击
-            anim.SetInteger("RandomInt",Random.Range(0,4));
+            yDistance = Mathf.Abs(playerTransform.position.y - bossAt.position.y);
+            xDistance = Mathf.Abs(playerTransform.position.x - bossAt.position.x);
+            
+            if (yDistance <= 5f && xDistance <= attackScopeRadius + 15f)
+            {
+                isIdle = true;
+                isWalk = false;
+            }
+            
+            if (closeAttackCount <= 2)
+            {
+                //前两次攻击没有cd
+                AttackCdCount = 3f;
+            }
+            
+            if (AttackCdCount >= AttackCd)
+            {
+                //攻击次数++
+                closeAttackCount++;
+                //当玩家在boss攻击范围内时，随机释放横划、竖劈和锤击
+                int randomInt = Random.Range(0, 4);
+                if (randomInt.Equals(3))
+                {
+                    //当随机到锤击时，检测距离是否足够，如果不够就释放横划和竖劈
+                    if (canHammerBlow)
+                    {
+                        if (!isInSecondStage)
+                        {
+                            anim.SetInteger("RandomInt", randomInt);
+                            canHammerBlow = false;
+                        }
+                    }
+                    else
+                    {
+                        randomInt = Random.Range(0, 3);
+                        anim.SetInteger("RandomInt", randomInt);
+                    }
+                }
+            }
+
+            //计算cd
+            AttackCdCount += Time.deltaTime;
         }
         else
         {
-            anim.SetInteger("RandomInt", 0);
+            //如果出了近身攻击范围，就取消idle
+            isIdle = false;
+            //anim.SetInteger("RandomInt", 0);
         }
     }
     
+    //设置技能cd，技能动画结束时调用
+    void SetAttackCd()
+    {
+        AttackCdCount = 0;
+        //并将randomInt置为0，保证不重复释放技能
+        anim.SetInteger("RandomInt", 0);
+    }
+    
+    //巡逻时的等待
     IEnumerator TimeWaiter(float waitSeconds)
     {
         Debug.Log("开始等待");
         isIdle = true;
         isWait = true;
+        isWalk = false;
         yield return new WaitForSeconds(waitSeconds);
         Debug.Log("等待完毕");
         isWait = false;
         isIdle = false;
+        isWalk = true;
+        //切换到下一个巡逻点
         patrolPosition++;
+        //点位超出数组范围时重置
         if (patrolPosition >= patrolPoint.Length)
         {
             patrolPosition = 0;
@@ -239,9 +361,9 @@ public class BossController : MonoBehaviour
     //巡逻
     void PatrolMove()
     {
-        if (isPatrol)
+        if (isPatrol && !isIdle && !isWait)
         {
-            if (!isWait && !isDie && !isChase)
+            if (!isDie && !isChase)
             {
                 isPatrol = true;
                 //巡逻过程中以巡逻点为target更改朝向
@@ -252,12 +374,12 @@ public class BossController : MonoBehaviour
             }
 
             //到达一个巡逻点之后切换到下一个巡逻点
-            if (Physics2D.OverlapCircle(patrolPoint[patrolPosition].position, 0.5f, bossLayer))
+            if (Physics2D.OverlapCircle(patrolPoint[patrolPosition].position, 1f, bossLayer))
             {
                 Debug.Log("已到达巡逻点");
 
                 //到达巡逻点后等待一段时间再前往下一个巡逻点
-                StartCoroutine(TimeWaiter(5f));
+                StartCoroutine(TimeWaiter(3f));
             }
         }
     }
@@ -267,7 +389,7 @@ public class BossController : MonoBehaviour
     {
         anim.SetTrigger(verticalAttack);
     }
-    //竖劈蓄力时boss的转向
+    //竖劈蓄力时boss的转向，在动画事件中调用
     void VerticalAttackDirection()
     {
         FlipTo(playerTransform);
@@ -275,12 +397,15 @@ public class BossController : MonoBehaviour
     //竖劈的效果，竖劈动画时通过event调用
     void VerticalAttackEffect()
     {
+        //开启竖劈技能的范围显示
         verticalAttackScope.gameObject.SetActive(true);
+        
         //获取矩形对角线两顶点
         Transform leftTop = verticalAttackScope.GetChild(0);
         Transform rightBottom = verticalAttackScope.GetChild(1);
         
-        Collider2D playerCollider;  //玩家的碰撞体
+        //玩家的碰撞体
+        Collider2D playerCollider;  
         try
         {
             playerCollider = Physics2D.OverlapArea(leftTop.position, rightBottom.position, playerLayer);
@@ -291,14 +416,20 @@ public class BossController : MonoBehaviour
             Debug.Log("区域内无Player");
             throw;
         }
-        
+        //如果检测到玩家
         if (playerCollider)
         {
             PlayerHurt playerHurt = CollisionCheck.PlayerCheck(playerCollider);
-            if(playerHurt)
+            if (playerHurt)
+            {
                 playerHurt.Collapsing(1);
+            }
+                
         }
-        
+    }
+    //关闭竖劈技能范围显示，动画中调用
+    void CloseVerticalAttackScope()
+    {
         verticalAttackScope.gameObject.SetActive(false);
     }
     
@@ -353,29 +484,30 @@ public class BossController : MonoBehaviour
     //全图范围内获取Player坐标，生成一个红色圆圈，延迟爆炸
     void MagicAttack()
     {
-        //当生命值下降到一定数值时释放
-        if (healthValue.Equals(50.0f) && isHealthDown)
+        //当处于第二阶段并且生命值下降到一定数值时释放
+        if (canMagicAttack)
         {
             anim.SetTrigger(magicAttack);
         }
     }
-    void OpenMagicAttackScope(int i)
+    //index代表是第几个圆圈，这个函数由animation event调用
+    void OpenMagicAttackScope(int index)
     {
-        StartCoroutine(MagicAttackScope(i));
+        StartCoroutine(MagicAttackScope(index));
     }
     IEnumerator MagicAttackScope(int index)
     {
-        //默认关闭碰撞体
+        //每一次出现的时候都是关闭碰撞体的状态
         Collider2D circleCollider = magicCircle[index].GetComponent<Collider2D>();
         circleCollider.enabled = false;
-        //获取玩家坐标并显示圆形范围
+        //获取玩家坐标并显示圆形
         magicCircle[index].position = playerTransform.position;
         magicCircle[index].gameObject.SetActive(true);
-        //延时1s调用碰撞检测函数
+        //延时1s开启碰撞体
         yield return new WaitForSeconds(1f);
         MagicAttackEffect(circleCollider);
     }
-    //检测是否攻击到玩家
+    //开启碰撞体
     void MagicAttackEffect(Collider2D circleCollider)
     {
         circleCollider.enabled = true;
@@ -386,8 +518,24 @@ public class BossController : MonoBehaviour
         magicCircle[index].GetComponent<Collider2D>().enabled = false;
         magicCircle[index].gameObject.SetActive(false);
     }
-    
 
+
+    void UpdatePlayerTransform()
+    {
+        //计算boss和playerAt左右点的水平距离
+        float LeftDistance = Mathf.Abs(bossAt.position.x - playerAtLeft.position.x);
+        float rightDistance = Mathf.Abs(bossAt.position.x - playerAtRight.position.x);
+        //哪个离boss近就选择哪个
+        if (LeftDistance < rightDistance)
+        {
+            playerTransform = playerAtLeft;
+        }
+        else
+        {
+            playerTransform = playerAtRight;
+        }
+    }
+    
     //以target为目标更改朝向
     void FlipTo(Transform target)
     {
@@ -401,5 +549,21 @@ public class BossController : MonoBehaviour
                 transform.localScale = new Vector3(-1, 1, 1);
             }
         }
+    }
+    
+    //关闭南瓜头，扔头动画中调用
+    void HeadHidden()
+    {
+        head.SetActive(false);
+    }
+    
+    //由animation event调用，释放技能时处于isAttack状态，不移动，技能结束关闭isAttack状态
+    void IsAttack()
+    {
+        isAttack = true;
+    }
+    void IsNotAttack()
+    {
+        isAttack = false;
     }
 }

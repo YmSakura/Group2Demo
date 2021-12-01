@@ -8,7 +8,11 @@ public class ArmColliderCheck : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         PlayerHurt playerHurt = CollisionCheck.PlayerCheck(other);
-        //人物被击退
-        playerHurt.Repeled(1,1);
+        if (playerHurt)
+        {
+            //人物被击退
+            playerHurt.Repeled(1,1);
+        }
+        
     }
 }
