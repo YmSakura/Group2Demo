@@ -81,7 +81,7 @@ public class BossController : MonoBehaviour
     public GameObject chaseArea; //追击范围
     private Transform leftChasePoint, rightChasePoint; //追击范围矩形的顶点
     private bool isInChaseScope; //是否处于追击范围
-    private float attackScopeRadius = 30f; //攻击范围圆形的半径
+    private float attackScopeRadius = 5f; //攻击范围圆形的半径
     private int closeAttackCount; //进行近身攻击的次数
     private float xDistance, yDistance;
 
@@ -165,7 +165,7 @@ public class BossController : MonoBehaviour
     }
 
     //被攻击时调用
-    void BeAttacked(float damageValue)
+    public void BeAttacked(float damageValue)
     {
         //只有在idle和walk状态下才可以播放受击动画
         if (isIdle || isWalk)
@@ -294,7 +294,7 @@ public class BossController : MonoBehaviour
             isChase = false;
             Debug.Log(yDistance);
             //如果玩家与boss的垂直距离大于指定距离，boss就向垂直方向移动
-            if (yDistance > 5f)
+            if (yDistance > attackScopeRadius/4)
             {
                 canAttack = false;
                 //释放技能时无法移动
@@ -307,10 +307,10 @@ public class BossController : MonoBehaviour
                         moveSpeed * Time.deltaTime);
                 }
             }
-            else if (yDistance <= 5f && xDistance <= attackScopeRadius)
+            else if (yDistance <= attackScopeRadius / 4 && xDistance <= attackScopeRadius)
             {
                 //x距离足够小时才可以释放锤击
-                if (xDistance <= 15f)
+                if (xDistance <= attackScopeRadius / 2)
                 {
                     canHammerBlow = true;
                 }
@@ -334,7 +334,7 @@ public class BossController : MonoBehaviour
     {
         if (canAttack)
         {
-            if (yDistance <= 5f && xDistance <= attackScopeRadius + 15f)
+            if (yDistance <= attackScopeRadius / 4 && xDistance <= attackScopeRadius * 1.25)
             {
                 isIdle = true;
                 isWalk = false;
@@ -619,11 +619,11 @@ public class BossController : MonoBehaviour
         {
             if (target.position.x > transform.position.x)
             {
-                transform.localScale = new Vector3(1, 1, 1);
+                transform.localScale = new Vector3(0.15f, 0.15f, 1);
             }
             else if (target.position.x < transform.position.x)
             {
-                transform.localScale = new Vector3(-1, 1, 1);
+                transform.localScale = new Vector3(-0.15f, 0.15f, 1);
             }
         }
     }
