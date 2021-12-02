@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerHurt : MonoBehaviour
 {
     [SerializeField] private float healthTimer, healthTimerSet = 5, collapseTimer, collapseTimerSet;
-    [SerializeField] public static int healthSet = 120, healthIncrease = 1;
+    [SerializeField] public int healthSet = 120, healthIncrease = 1;
     public static int health;
 
     // Start is called before the first frame update
