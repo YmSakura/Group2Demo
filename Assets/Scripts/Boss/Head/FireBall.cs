@@ -19,23 +19,11 @@ public class FireBall : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Player")
-        {
-            PlayerHurt.health -= 10;
-            GameObjectPool.PoolInstance.PushBullet(gameObject);
-        }
-        else if(collision.tag == "Shield")
-        {
-
-        }
-        else if(collision.tag == "Boss")
-        {
-
-        }
-        else if(collision.tag == "Wall")
+        if(collision.tag == "Wall")
         {
             gameObject.SetActive(false);
-            FireBallPool
+            GameObjectPool.PoolInstance.PushBullet(gameObject);
+            
         }
     }
 }

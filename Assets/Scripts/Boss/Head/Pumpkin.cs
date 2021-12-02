@@ -5,7 +5,7 @@ using UnityEngine;
 public class Pumpkin : MonoBehaviour
 {
     [SerializeField] private Transform playerAt;
-    private Transform transform;
+    private Transform trans;
     private Time shootInterval, lastShoot, shoottimes;
     void Start()
     {
