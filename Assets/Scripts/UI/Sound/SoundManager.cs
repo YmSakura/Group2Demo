@@ -8,8 +8,7 @@ public class SoundManager : MonoBehaviour
     public static SoundManager Sound;
 
 
-    [SerializeField] private AudioMixer audioMixer;
-    [SerializeField] private AudioSource MusicAudioSource, SFXAudioSource;
+    [SerializeField] private AudioSource MusicAudioSource, PlayerSFXAudioSource, BossSFXAudioSource;
     [SerializeField] private AudioClip playerAttackAudio, playerHurtAudio, playerDefenceAudio;
     [SerializeField] private AudioClip bossAttackAudio, bossHurtAudio, bossAudio;
     [SerializeField]private AudioClip BackgroundMusic;
@@ -18,13 +17,20 @@ public class SoundManager : MonoBehaviour
         Sound = this;
     }
 
-    //特效音频播放
-    public void AudioPlay(string objectName, string operation)
+    //玩家特效音频播放
+    public void PlayerAudioPlay(string operation)
     {
-        SFXAudioSource.clip = AudioName(objectName,operation);
-        SFXAudioSource.Play();
+        PlayerSFXAudioSource.clip = AudioName("player", operation);
+        PlayerSFXAudioSource.Play();
     }
-    
+
+    //Boss特效音频播放
+    public void BossAudioPlay(string operation)
+    {
+        BossSFXAudioSource.clip = AudioName("boss", operation);
+        BossSFXAudioSource.Play();
+    }
+
     //objectName分为player和boss（都小写）
     //operation分为hurt,attack,defence
     //输入对象名和操作行为输出对应音频
