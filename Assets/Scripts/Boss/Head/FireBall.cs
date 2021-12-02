@@ -22,7 +22,7 @@ public class FireBall : MonoBehaviour
         if(collision.tag == "Wall")
         {
             gameObject.SetActive(false);
-            GameObjectPool.PoolInstance.PushBullet(gameObject);
+            ObjectPool.Instance.PushObject(gameObject);
             
         }
     }
