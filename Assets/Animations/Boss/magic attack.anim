@@ -14283,13 +14283,6 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.1
-    functionName: CantMagicAttack
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
   - time: 0.51666665
     functionName: OpenMagicAttackScope
     data: 
@@ -14332,7 +14325,14 @@ AnimationClip:
     floatParameter: 0
     intParameter: 3
     messageOptions: 0
-  - time: 4.4666667
+  - time: 4.366667
+    functionName: CantMagicAttack
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 4.4166665
     functionName: SetAttackCd
     data: 
     objectReferenceParameter: {fileID: 0}
