@@ -18,16 +18,16 @@ public class SoundManager : MonoBehaviour
         Sound = this;
     }
 
-    //ÌØĞ§ÒôÆµ²¥·Å
+    //ç‰¹æ•ˆéŸ³é¢‘æ’­æ”¾
     public void AudioPlay(string objectName, string operation)
     {
         SFXAudioSource.clip = AudioName(objectName,operation);
         SFXAudioSource.Play();
     }
     
-    //objectName·ÖÎªplayerºÍboss£¨¶¼Ğ¡Ğ´£©
-    //operation·ÖÎªhurt,attack,defence
-    //ÊäÈë¶ÔÏóÃûºÍ²Ù×÷ĞĞÎªÊä³ö¶ÔÓ¦ÒôÆµ
+    //objectNameåˆ†ä¸ºplayerå’Œbossï¼ˆéƒ½å°å†™ï¼‰
+    //operationåˆ†ä¸ºhurt,attack,defence
+    //è¾“å…¥å¯¹è±¡åå’Œæ“ä½œè¡Œä¸ºè¾“å‡ºå¯¹åº”éŸ³é¢‘
     public AudioClip AudioName(string objectName,string operation)
     {
         if(objectName == "player")
@@ -45,7 +45,7 @@ public class SoundManager : MonoBehaviour
         return null;
     }
     
-    //±³¾°ÒôÀÖ²¥·Å
+    //èƒŒæ™¯éŸ³ä¹æ’­æ”¾
     public void MusicPlay()
     {
         MusicAudioSource.clip = BackgroundMusic;

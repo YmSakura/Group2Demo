@@ -3652,7 +3652,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 4.516667
+    m_StopTime: 4.5
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -14283,6 +14283,13 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0.1
+    functionName: CantMagicAttack
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.51666665
     functionName: OpenMagicAttackScope
     data: 
@@ -14325,15 +14332,15 @@ AnimationClip:
     floatParameter: 0
     intParameter: 3
     messageOptions: 0
-  - time: 4.5
-    functionName: IsNotAttack
+  - time: 4.4666667
+    functionName: SetAttackCd
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 4.516667
-    functionName: SetAttackCd
+  - time: 4.4666667
+    functionName: IsNotAttack
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
