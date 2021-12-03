@@ -9,24 +9,16 @@ public class PlayerMovement : MonoBehaviour
     private Collider2D coll;
     private Animator anim;
 
-    private float HPPercent, endurancePercent;
-
     private float inputX, inputY;
     private float moveSpeed;
-    private GameObject sword;
-    [SerializeField] private int attackTime = 0;
-    [SerializeField] private bool attackPause;
-    [SerializeField] private float attackTimer, attackTimerSet = 0.6f;
-    private Vector2 moveInput;
-
 
     [Header("人物设置")]
     [SerializeField] public float walkSpeed = 50, runSpeed = 100, rollSpeed = 0.5f, defendSpeed = 20;
     [SerializeField] public int enduranceSet = 100, defendPower = 8; // 耐力， 防御值
     public int damage;
-    public static int endurance; // 耐力
-    public static bool isHurt;
-    public static bool rollLock, shieldState;//翻滚锁定, 举盾状态
+    private int endurance; // 耐力
+    public bool isHurt;
+    private bool rollLock, shieldState;//翻滚锁定, 举盾状态
 
     [Header("计时器&耐力消耗&回复")]
     //分别 耐力回复计时器， 跑步计时器
@@ -37,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
     public int enduranceIncrease = 20;
 
     [Header("外部数据测试")]
-    public static int getDamage = 1;
+    public int getDamage = 1;
 
     // Start is called before the first frame update
     void Awake()
@@ -45,12 +37,9 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
-        //
-        //sword = GameObject.Find("player0/bone_1/bone_2/bone_7/bone_8/bone_9/bone_10");
         //基本参数和计时器初始化
         endurance = enduranceSet;
         runTimer = runTimerSet;
-        attackTimer = attackTimerSet;
     }
 
     // Update is called once per frame
@@ -58,8 +47,6 @@ public class PlayerMovement : MonoBehaviour
     {
         Moving();
         DefendingAnim();
-
-        AttackCheck();
     }
 
 
