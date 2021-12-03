@@ -120,7 +120,7 @@ public class BossController : MonoBehaviour
             magicCircle[i].gameObject.SetActive(false);
         }
         armCollider.enabled = false;
-        
+
     }
 
     void Update()
