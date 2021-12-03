@@ -208,7 +208,7 @@ public class PlayerMovement : MonoBehaviour
     {
         GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = true;
     }
-    void DoAttack(int attackTime)
+    /*void DoAttack(int attackTime)
     {
         if (true)
         {
@@ -226,7 +226,7 @@ public class PlayerMovement : MonoBehaviour
         {
             anim.SetInteger("AttackState", attackTime);
         }
-    }
+    }*/
     void ResetAttack()
     {
         attackTime = 0;

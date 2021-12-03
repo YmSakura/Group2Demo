@@ -7,6 +7,7 @@ public class PlayerHurt : MonoBehaviour
     [SerializeField] private float healthTimer, healthTimerSet = 5, collapseTimer, collapseTimerSet;
     [SerializeField] public int healthSet = 120, healthIncrease = 1;
     public static int health;
+    public bool isHurt;
 
     // Start is called before the first frame update
     void Awake()
@@ -17,7 +18,18 @@ public class PlayerHurt : MonoBehaviour
 
     private void Update()
     {
-        Curing();
+        if (!PlayerMovement.rollLock)
+        {
+            if (isHurt)
+            {
+                health -= PlayerMovement.getDamage;
+                PlayerMovement.anim.SetBool("isHurt", isHurt);
+            }
+        }
+        else
+        {
+            Curing();
+        }
     }
 
     //血量回复
@@ -44,9 +56,24 @@ public class PlayerHurt : MonoBehaviour
     }
 
     //眩晕
-    public void Collapsing(float CollapseTime)
+    public IEnumerator Collapsing(float CollapseTime)
     {
+        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;
         Debug.Log("人物被眩晕");
+        yield return new WaitForSeconds(CollapseTime);
+        ResetMovement();
     }
 
+    //重置人物移动脚本
+    private void ResetMovement()
+    {
+        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = true;
+    }
+
+    //重置受伤状态
+    public void RemoveHurt()
+    {
+        isHurt = false;
+        PlayerMovement.anim.SetBool("isHurt", isHurt);
+    }
 }

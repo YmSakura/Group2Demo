@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AttackTime : MonoBehaviour
 {
-    private float attackTimer, attackTimerSet = 0.8f;
-    private float thirdTimer, thirdTimerSet = 1.6f;
+    public float attackTimer, attackTimerSet = 0.5f;
+    public float thirdTimer, thirdTimerSet = 0.8f;
 
     // Start is called before the first frame update
     private void OnEnable()
