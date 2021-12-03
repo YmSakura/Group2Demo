@@ -9,9 +9,9 @@ public class Pumpkin : MonoBehaviour
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject fireballPrefab;
 
-    private float shootInterval=5f;        //射击CD
-    private float lastShoot = -10f;     //上次射击时间
-    private float shoottimes=0;           //射击计数器
+    private float shootInterval=3f;        //射击CD
+    private float shootTimer=0f;     //上次射击时间
+    private float shootTimes=0;           //射击计数器
 
     private Vector2 direction;          //南瓜头xy坐标
     private Vector2 PlayerTrans;        //玩家xy坐标
@@ -46,13 +46,19 @@ public class Pumpkin : MonoBehaviour
 
     private void Attack()
     {
-        if(Time.time > shootInterval + lastShoot)
+        if (shootTimer != 0)
         {
-            Fire();
-            lastShoot = Time.time;
-            shoottimes++;
-
+            shootTimer -= Time.deltaTime;
+            if (shootTimer <= 0)
+                shootTimer = 0;
         }
+
+        if (shootTimer == 0)
+        {
+            shootTimer = shootInterval;
+            Fire();
+        }
+        
         
     }
 
@@ -60,6 +66,6 @@ public class Pumpkin : MonoBehaviour
     {
         GameObject fireball = ObjectPool.Instance.GetObject(fireballPrefab);
         fireball.transform.position = transform.position;
-        fireball.GetComponent<FireBall>().SetSpeed(-direction);
+        fireball.GetComponent<FireBall>().SetSpeed(direction);
     }
 }
