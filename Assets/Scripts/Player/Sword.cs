@@ -22,11 +22,11 @@ public class Sword : MonoBehaviour
             }
             else if (PlayerMovement.attackTime == 2)
             {
-                collision.GetComponent<BossController>().BeAttacked(15);
+                collision.GetComponent<BossController>().BeAttacked(16);
             }
             else if (PlayerMovement.attackTime == 3)
             {
-                collision.GetComponent<BossController>().BeAttacked(18);
+                collision.GetComponent<BossController>().BeAttacked(22);
             }
         }
     }
