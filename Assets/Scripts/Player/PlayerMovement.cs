@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     private float HPPercent, endurancePercent;
 
     private float inputX, inputY;
+    private float moveSpeed;
     private GameObject sword;
     [SerializeField] private int attackTime = 0;
     [SerializeField] private bool attackPause;
@@ -20,8 +21,8 @@ public class PlayerMovement : MonoBehaviour
 
 
     [Header("人物设置")]
-    public float walkSpeed = 50, runSpeed = 150, rollSpeed = 0.5f, defendSpeed = 20;
-    public int enduranceSet = 100, defendPower = 8; // 耐力， 防御值
+    [SerializeField] public float walkSpeed = 50, runSpeed = 100, rollSpeed = 0.5f, defendSpeed = 20;
+    [SerializeField] public int enduranceSet = 100, defendPower = 8; // 耐力， 防御值
     public int damage;
     public static int endurance; // 耐力
     public static bool isHurt;
@@ -101,7 +102,8 @@ public class PlayerMovement : MonoBehaviour
                 if (endurance >= runCost)
                 {
                     rb.velocity = moveInput * runSpeed;
-                    anim.SetInteger("moveSpeed", 2);
+                    moveSpeed = System.Math.Abs(rb.velocity.x) > System.Math.Abs(rb.velocity.y) ? System.Math.Abs(rb.velocity.x) : System.Math.Abs(rb.velocity.y);
+                    anim.SetFloat("moveSpeed", moveSpeed);
                     if (runTimer != 0)
                     {
                         runTimer -= Time.deltaTime;
@@ -118,7 +120,8 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 rb.velocity = moveInput * walkSpeed;
-                anim.SetInteger("moveSpeed", 1);
+                moveSpeed = System.Math.Abs(rb.velocity.x) > System.Math.Abs(rb.velocity.y) ? System.Math.Abs(rb.velocity.x) : System.Math.Abs(rb.velocity.y);
+                anim.SetFloat("moveSpeed", moveSpeed);
                 if (endurance < enduranceSet)
                 {
                     if (enduranceTimer != 0)
@@ -147,7 +150,8 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             rb.velocity = Vector2.zero;
-            anim.SetInteger("moveSpeed", 0);
+            moveSpeed = 0;
+            anim.SetFloat("moveSpeed", moveSpeed);
             anim.SetBool("isMoving", false);
             anim.SetBool("isIdling", true);
             if (endurance < enduranceSet)
@@ -300,11 +304,4 @@ public class PlayerMovement : MonoBehaviour
         anim.SetBool("AttackPause", attackPause);
     }
 
-    public void Dying()
-    {
-        if (PlayerHurt.health <= 0)
-        {
-            anim.SetBool("Death", true);
-        }
-    }
 }
