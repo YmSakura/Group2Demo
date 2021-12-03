@@ -43,7 +43,7 @@ public class ObjectPool
             }
             _object.transform.SetParent(childPool.transform);           //将物体设置为子池的子物品
         }
-        _object = objectPool[_name].Dequeue();                    //从子池中取出物体
+        _object = objectPool[_name].Dequeue();                          //从子池中取出物体
         _object.SetActive(true);                                        //使实例激活
         return _object;                                                 //返回实例以供使用
     }

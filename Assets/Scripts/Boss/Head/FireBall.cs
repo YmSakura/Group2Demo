@@ -8,6 +8,7 @@ public class FireBall : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private LayerMask Wall;
     [SerializeField] private Collider2D col;
+    private bool isUsed;
     private float speed = 5f;
 
 
@@ -16,6 +17,7 @@ public class FireBall : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+        isUsed = false;
     }
     private void OnEnable()
     {
@@ -30,15 +32,19 @@ public class FireBall : MonoBehaviour
 
     private void Check()
     {
-        if (col.IsTouchingLayers(Wall))
+        if (col.IsTouchingLayers(Wall))                 //碰到墙则消失
         {
-            Debug.Log("Touch");
-            ObjectPool.Instance.PushObject(gameObject);
+            ObjectPool.Instance.PushObject(gameObject);     //推回池中
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if (collision.tag == "Boss"&&!isUsed)                                           //碰到boss则boss扣血，火球返回池中
+        {
+            collision.GetComponent<BossController>().BeAttacked(15f);
+            isUsed = true;
+            ObjectPool.Instance.PushObject(gameObject);
+        }
     }
     
     public void SetSpeed(Vector2 direction)
