@@ -5,16 +5,13 @@ using UnityEngine;
 public class FireBall : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-
-    private float speed = 250f;
-
-
-
-    private void Awake()
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-    private void OnEnable()
+
+    // Update is called once per frame
+    void Update()
     {
         
     }
@@ -28,10 +25,5 @@ public class FireBall : MonoBehaviour
             ObjectPool.Instance.PushObject(gameObject);
             
         }
-    }
-    
-    public void SetSpeed(Vector2 direction)
-    {
-        rb.velocity = direction * speed;
     }
 }
