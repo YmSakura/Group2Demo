@@ -59,7 +59,30 @@ public class PlayerMovement : MonoBehaviour
 
         //行动
         if (!rollLock && (inputX != 0 || inputY != 0))
-        { 
+        {
+            if (inputX != 0 && inputX != transform.localScale.x)
+            {
+                //float playerX = transform.position.x;
+                /*if (inputX == 1)
+                {
+                    transform.position = new Vector2(0, transform.position.y);
+                }*/
+                /*else if(inputX == -1)
+                {
+                    transform.position = new Vector2(-34.7, transform.position.y);
+                }*/
+                //transform.localScale = new Vector3(inputX, 1, 1);
+
+                /*if (inputX == 1)
+                {
+                    transform.position = new Vector2(transform.position.x + 2 * playerX, transform.position.y);
+                }
+                else
+                {
+                    transform.position = new Vector2(transform.position.x - 2 * playerX, transform.position.y);
+                }*/
+            }
+
             //跑步
             if (Input.GetKey(KeyCode.LeftShift))
             {
@@ -205,5 +228,67 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //攻击（仅有动画）
+    void AttackCheck()
+    {
+        if (attackTimer > 0)
+        {
+            attackTimer -= Time.deltaTime;
+            if (Input.GetMouseButtonDown(0) /*&& !attackPause*/)
+            {
+                attackTime++;
+                if (attackTime <= 3)
+                {
+                    DoAttack();
+                    attackTimer = attackTimerSet;
+                }
+                else if (attackTime > 3)
+                {
+                    /*attackPause = true;
+                    anim.SetBool("AttackPause", attackPause);
+                    ResetAttack();*/
+                    attackTimer = 0;
+                }
+            }
+        }
+        else
+        {
+            if (attackTime > 0)
+            {
+                attackPause = true;
+                anim.SetBool("AttackPause", attackPause);
+                attackTime = 0;
+                anim.SetInteger("AttackState", attackTime);
+            }
+            attackTimer = attackTimerSet;
+        }
+    }
+    void DoAttack()
+    {
+        if (attackTime == 1)
+        {
+            anim.SetInteger("AttackState", attackTime);
+        }
+        else if (attackTime == 2)
+        {
+            anim.SetInteger("AttackState", attackTime);
+        }
+        else if (attackTime == 3)
+        {
+            anim.SetInteger("AttackState", attackTime);
+        }
+        /*else
+        {
+            anim.SetBool("AttackPause", true);
+        }*/
+    }
+    void ResetAttack()
+    {
+        attackTime = 0;
+        anim.SetInteger("AttackState", attackTime);
+        attackTimer = attackTimerSet;
+        attackPause = false;
+        anim.SetBool("AttackPause", attackPause);
+    }
 
 }
