@@ -4,37 +4,42 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public static int attackTime = 0;                                                                   //攻击阶段
+    private bool attackPause;                                                                              //是否要停止攻击判断
+    private float attackTimer, attackTimerSet = 1.0f;                                       //攻击计时器
+    public GameObject sword;                                                                            //获取到剑的对象
+    public int damage;                                                                                          //造成的伤害
+
     [Header("基本组件")]
-    private Rigidbody2D rb;
+    public static Rigidbody2D rb;
     private Collider2D coll;
-    private Animator anim;
+    public static Animator anim;
 
-    private float HPPercent, endurancePercent;
-
-    private float inputX, inputY;
-    private float moveSpeed;
-    private GameObject sword;
-    [SerializeField] private int attackTime = 0;
-    [SerializeField] private bool attackPause;
-    [SerializeField] private float attackTimer, attackTimerSet = 0.6f;
-    private Vector2 moveInput;
+    private float inputX, inputY;                                                                           //获取玩家输入的XY方向
+    private Vector2 moveInput;                                                                          //玩家输入的XY单位向量
+    public float walkSpeed = 5, runSpeed = 10;                                                //走，跑 移速
+    public int runCost = 1;                                                                                     //跑步耐力消耗
+    private float runTimer, runTimerSet = 0.1f;                                                 //跑步耐力消耗计时器
 
 
-    [Header("人物设置")]
-    [SerializeField] public float walkSpeed = 50, runSpeed = 100, rollSpeed = 0.5f, defendSpeed = 20;
-    [SerializeField] public int enduranceSet = 100, defendPower = 8; // 耐力， 防御值
-    public int damage;
-    public static int endurance; // 耐力
-    public static bool isHurt;
-    public static bool rollLock, shieldState;//翻滚锁定, 举盾状态
+    public int enduranceSet = 100;                                                                      //耐力上限
+     public static int endurance;                                                                           // 耐力值
+    private bool enduranceStop;                                                                         //耐力回复状态判断
+    private float enduranceTimer, enduranceTimerSet = 1;                                //耐力恢复计时器
+    private float enduranceCD, enduranceCDSet = 3.0f;                                       //耐力CD计时器
+    public int enduranceIncrease = 20;                                                                  //耐力回复量
 
-    [Header("计时器&耐力消耗&回复")]
-    //分别 耐力回复计时器， 跑步计时器
-    [SerializeField] private float enduranceTimer, runTimer, defendTimer;
-    //分别 耐力回复间隔， 跑步间隔 0.1s
-    [SerializeField] private float enduranceTimerSet = 1, runTimerSet = 0.1f;
-    public int runCost = 1, rollCost = 34, defendCost;
-    public int enduranceIncrease = 20;
+    public static bool rollLock;                                                                            //翻滚锁定
+    public float rollSpeed = 0.5f;                                                                          //翻滚移速
+    public int rollCost = 34;                                                                                   //翻滚耐力消耗
+
+    public float defendSpeed = 20;                                                                      //防御移速
+    public int defendPower = 8;                                                                             // 防御值
+    public static bool isHurt;                                                                              //受伤状态判断
+    public static bool shieldState;                                                                         //举盾状态
+    public int defendCost;                                                                                      //防御耐力消耗
+
+    private float spikeTimer = 0.0f;                                                                    //突刺计时器
 
     [Header("外部数据测试")]
     public static int getDamage = 1;
@@ -46,9 +51,9 @@ public class PlayerMovement : MonoBehaviour
         coll = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
         //
-        //sword = GameObject.Find("player0/bone_1/bone_2/bone_7/bone_8/bone_9/bone_10");
         //基本参数和计时器初始化
         endurance = enduranceSet;
+        enduranceTimer = enduranceTimerSet;
         runTimer = runTimerSet;
         attackTimer = attackTimerSet;
     }
@@ -56,140 +61,99 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Moving();
         DefendingAnim();
 
-        AttackCheck();
+        if (attackTime == 0 && Input.GetMouseButton(0) && endurance >= 15)
+        {
+            attackTime = 1;
+            anim.SetInteger("AttackState", attackTime);
+        }
     }
 
+    private void FixedUpdate()
+    {
+        Movement();
+    }
 
     //人物移动
-    void Moving()
+    void Movement()
     {
         inputX = Input.GetAxisRaw("Horizontal");
         inputY = Input.GetAxisRaw("Vertical");
-        Vector2 moveInput = new Vector2(inputX, inputY).normalized;//标准化向量长度
-
-        //行动
-        if (!rollLock && (inputX != 0 || inputY != 0))
+        moveInput = new Vector2(inputX, inputY).normalized;
+        if (inputX != 0 || inputY != 0)
         {
-            if (inputX != 0 && inputX != transform.localScale.x)
+            if (inputX * transform.localScale.x < 0)    //如果输入运动方向和面朝方向相反，则转向
             {
-                //float playerX = transform.position.x;
-                /*if (inputX == 1)
+                if (inputX == 1)                        //输入为右，则向右转
                 {
-                    transform.position = new Vector2(0, transform.position.y);
-                }*/
-                /*else if(inputX == -1)
-                {
-                    transform.position = new Vector2(-34.7, transform.position.y);
-                }*/
-                //transform.localScale = new Vector3(inputX, 1, 1);
-
-                /*if (inputX == 1)
-                {
-                    transform.position = new Vector2(transform.position.x + 2 * playerX, transform.position.y);
+                    transform.position = new Vector3(transform.position.x + 3.14f, transform.position.y,
+                        transform.position.z);          //因为人物和对称轴有相对位移，反转时需要手动+-3.14f弥补位移差
+                    transform.localScale = Vector3.one * 0.08f;
                 }
-                else
+                else if (inputX == -1)                  //输入为左，则向左转
                 {
-                    transform.position = new Vector2(transform.position.x - 2 * playerX, transform.position.y);
-                }*/
+                    transform.position = new Vector3(transform.position.x - 3.14f, transform.position.y,
+                        transform.position.z);          //同上
+                    transform.localScale = new Vector3(-1, 1, 1) * 0.08f;
+                }
             }
 
-            //跑步
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift))                        //按下左shift跑步
             {
-                if (endurance >= runCost)
+                if (endurance >= runCost)                               //当且仅有耐力值大于跑步消耗时才可以跑步
                 {
-                    rb.velocity = moveInput * runSpeed;
-                    anim.SetInteger("moveSpeed", 2);
-                    if (runTimer != 0)
+                    rb.velocity = moveInput * runSpeed;                 //速度设为跑步速度
+                    anim.SetInteger("moveSpeed", 2);        //动画设置为跑步状态
+                    runTimer += Time.fixedDeltaTime;                    //开始跑步时，跑步计时器开始计时
+                    if (runTimer > runTimerSet)                         //如果跑步计时器超过设定值
                     {
-                        runTimer -= Time.deltaTime;
-                        if (runTimer <= 0)
-                        {
-                            runTimer = runTimerSet;
-                            endurance -= runCost;
-                        }
+                        runTimer = 0;                                   //则重置计时器
+                        endurance -= runCost;                           //并减去花费耐力
                     }
-                }
-            }
 
-            //行走
-            else
-            {
-                rb.velocity = moveInput * walkSpeed;
-                anim.SetInteger("moveSpeed", 1);
-                if (endurance < enduranceSet)
-                {
-                    if (enduranceTimer != 0)
-                    {
-                        enduranceTimer -= Time.deltaTime;
-                        if (enduranceTimer <= 0)
-                        {
-                            enduranceTimer = enduranceTimerSet;
-                            if ((enduranceSet - endurance) < enduranceIncrease)
-                            {
-                                endurance = enduranceSet;
-                            }
-                            else
-                            {
-                                endurance += enduranceIncrease;
-                            }
-                        }
-                    }
+                    enduranceCD = enduranceCDSet;                       //耐力CD重置
+                    enduranceTimer = 0;                                 //耐力计时器重置
                 }
             }
-            anim.SetBool("isMoving", true);
-            anim.SetBool("isIdling", false);
+            else                                                        //未按下则是行走
+            {
+                rb.velocity = moveInput * walkSpeed;                    //速度设置为行走速度
+                anim.SetInteger("moveSpeed", 1);               //动画设置为行走
+                EnduranceRecover();
+
+            }
         }
-
-        //站立
         else
         {
-            rb.velocity = Vector2.zero;
-            moveSpeed = 0;
-            anim.SetInteger("moveSpeed", 0);
-            anim.SetBool("isMoving", false);
-            anim.SetBool("isIdling", true);
-            if (endurance < enduranceSet)
-            {
-                if (enduranceTimer != 0)
-                {
-                    enduranceTimer -= Time.deltaTime;
-                    if (enduranceTimer <= 0)
-                    {
-                        enduranceTimer = enduranceTimerSet;
-                        if ((enduranceSet - endurance) < enduranceIncrease)
-                        {
-                            endurance = enduranceSet;
-                        }
-                        else
-                        {
-                            endurance += enduranceIncrease;
-                        }
-                    }
-                }
-            }
+            rb.velocity = Vector2.zero;                                   //速度设为0
+            anim.SetInteger("moveSpeed", 0);                   //动画设置为站立
+            EnduranceRecover();
         }
+    }
+    
 
-        //翻滚
-        if (Input.GetKeyDown(KeyCode.Space))
+
+    //回复耐力
+    void EnduranceRecover()
+    {
+        if (enduranceCD <= 0 && endurance != enduranceSet)          //如果耐力恢复CD为0且耐力值未满
         {
-            if (endurance >= rollCost)
+            enduranceTimer += Time.fixedDeltaTime;              //耐力回复计时器开始计时
+            if (enduranceTimer > enduranceTimerSet)             //如果耐力回复计时器超过设定值
             {
-                rollLock = true;
-                anim.SetBool("rollLock", true);
-                coll.enabled = false;
-                endurance -= rollCost;
-                rb.velocity = moveInput * rollSpeed;
+                endurance += enduranceIncrease;                 //则回复耐力
+                if (endurance > enduranceSet)
+                {
+                    endurance = enduranceSet;
+                }
+                enduranceTimer = 0;                             //并重置计时器
             }
         }
-
-        //防御
-        Defending(moveInput, getDamage);    //缺少目标的受到的伤害数值；
-
-
+        else
+        {
+            enduranceCD -= Time.fixedDeltaTime;                 //耐力恢复CD不为0，则加载CD
+        }
     }
 
     //结束翻滚（动画事件）
@@ -242,40 +206,14 @@ public class PlayerMovement : MonoBehaviour
     //攻击（仅有动画）
     void AttackCheck()
     {
-        if (attackTimer > 0)
-        {
-            attackTimer -= Time.deltaTime;
-            if (Input.GetMouseButtonDown(0) /*&& !attackPause*/)
-            {
-                attackTime++;
-                if (attackTime <= 3)
-                {
-                    DoAttack();
-                    attackTimer = attackTimerSet;
-                }
-                else if (attackTime > 3)
-                {
-                    /*attackPause = true;
-                    anim.SetBool("AttackPause", attackPause);
-                    ResetAttack();*/
-                    attackTimer = 0;
-                }
-            }
-        }
-        else
-        {
-            if (attackTime > 0)
-            {
-                attackPause = true;
-                anim.SetBool("AttackPause", attackPause);
-                attackTime = 0;
-                anim.SetInteger("AttackState", attackTime);
-            }
-            attackTimer = attackTimerSet;
-        }
+        GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = true;
     }
-    void DoAttack()
+    void DoAttack(int attackTime)
     {
+        if (true)
+        {
+
+        }
         if (attackTime == 1)
         {
             anim.SetInteger("AttackState", attackTime);
@@ -288,10 +226,6 @@ public class PlayerMovement : MonoBehaviour
         {
             anim.SetInteger("AttackState", attackTime);
         }
-        /*else
-        {
-            anim.SetBool("AttackPause", true);
-        }*/
     }
     void ResetAttack()
     {
@@ -300,6 +234,50 @@ public class PlayerMovement : MonoBehaviour
         attackTimer = attackTimerSet;
         attackPause = false;
         anim.SetBool("AttackPause", attackPause);
+        enduranceStop = false;
+    }
+    void AttackCost()
+    {
+        GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = false;
+        endurance -= 15;
+        enduranceStop = true;
     }
 
+    //突刺
+    /*void SpikeCheck()
+    {
+        spikeTimer += Time.deltaTime;
+        if (spikeTimer >= 1)
+        {
+            anim.SetBool("SpikeLock", false);
+        }
+        if (Input.get)
+        {
+
+        }
+    }*/
+
+    //耐力回复
+    void EnduranceIncreasing()
+    {
+        if (endurance < enduranceSet)
+        {
+            if (enduranceTimer != 0)
+            {
+                enduranceTimer -= Time.deltaTime;
+                if (enduranceTimer <= 0)
+                {
+                    enduranceTimer = enduranceTimerSet;
+                    if ((enduranceSet - endurance) < enduranceIncrease)
+                    {
+                        endurance = enduranceSet;
+                    }
+                    else
+                    {
+                        endurance += enduranceIncrease;
+                    }
+                }
+            }
+        }
+    }
 }
