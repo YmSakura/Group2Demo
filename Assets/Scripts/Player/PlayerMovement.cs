@@ -13,8 +13,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("基本组件")] public static Rigidbody2D rb;
     private Collider2D coll;
     public static Animator anim;
-    
-    [Header("基本移动")]
+
+    [Header("基本移动")] 
+    private bool runEnabled;//是否允许跑步
     private float inputX, inputY; //获取玩家输入的XY方向
     private Vector2 moveInput; //玩家输入的XY单位向量
     public float walkSpeed = 5, runSpeed = 10; //走，跑 移速
@@ -26,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
     public static int endurance; //耐力值
     [SerializeField]private float enduranceTimer, enduranceTimerSet = 0.1f; //耐力恢复计时器
     [SerializeField]private float enduranceCD;//耐力CD计时器
-    private const float enduranceCDSet= 0.5f; //耐力CD时间
+    private const float enduranceCDSet= 1.5f; //耐力CD时间
     private const int enduranceIncrease = 2; //耐力回复量
 
     [Header("翻滚")] 
@@ -107,6 +108,8 @@ public class PlayerMovement : MonoBehaviour
         inputX = Input.GetAxisRaw("Horizontal");
         inputY = Input.GetAxisRaw("Vertical");
         moveInput = new Vector2(inputX, inputY).normalized;
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+            runEnabled = true;//按下shift时重置跑步
         if (inputX != 0 || inputY != 0)
         {
             if (inputX * transform.localScale.x < 0) //如果输入运动方向和面朝方向相反，则转向
@@ -115,19 +118,28 @@ public class PlayerMovement : MonoBehaviour
                 transform.localScale = new Vector3(inputX, 1, 1) * 0.08f; //根据输入方向调整左右
             }
 
-            if (Input.GetKey(KeyCode.LeftShift) && endurance >= runCost) //按下左shift跑步,并且仅有耐力值大于跑步消耗时才可以跑步
+            if (Input.GetKey(KeyCode.LeftShift) && runEnabled) //当左shift被按住时并且允许跑步时才开始跑步
             {
-                rb.velocity = moveInput * runSpeed; //速度设为跑步速度
-                anim.SetInteger("moveSpeed", 2); //动画设置为跑步状态
-                runTimer += Time.fixedDeltaTime; //开始跑步时，跑步计时器开始计时
-                if (runTimer > runTimerSet) //如果跑步计时器超过设定值
+                if (endurance >= runCost)//当且仅当耐力值大于跑步消耗时才可以跑步
                 {
-                    runTimer = 0; //则重置计时器
-                    endurance -= runCost; //并减去花费耐力
-                }
+                    rb.velocity = moveInput * runSpeed; //速度设为跑步速度
+                    anim.SetInteger("moveSpeed", 2); //动画设置为跑步状态
+                    runTimer += Time.fixedDeltaTime; //开始跑步时，跑步计时器开始计时
+                    if (runTimer > runTimerSet) //如果跑步计时器超过设定值
+                    {
+                        runTimer = 0; //则重置计时器
+                        endurance -= runCost; //并减去花费耐力
+                    }
 
-                enduranceCD = enduranceCDSet; //耐力CD重置
-                enduranceTimer = 0; //耐力计时器重置
+                    enduranceCD = enduranceCDSet; //耐力CD重置
+                    enduranceTimer = 0; //耐力计时器重置
+                }
+                else//否则行走
+                {
+                    rb.velocity = moveInput * walkSpeed; //速度设置为行走速度
+                    anim.SetInteger("moveSpeed", 1); //动画设置为行走
+                    runEnabled = false;//如果耐力消耗殆尽,禁用跑步,需要等待下次按下shift才能开始重新跑步
+                }
             }
             else //未按下左Shift则是行走
             {
@@ -211,7 +223,7 @@ public class PlayerMovement : MonoBehaviour
             shieldState = true;
             anim.SetBool("shieldState", shieldState);
         }
-        else if (endurance <= 0 || !Input.GetMouseButton(1))
+        else
         {
             shieldState = false;
             anim.SetBool("shieldState", shieldState);

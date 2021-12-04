@@ -33,9 +33,9 @@ public class Pumpkin : MonoBehaviour
         death = false;
     }
 
-    private void OnEnable()//启用时从摄像机外飞到地图中心
+    private void OnEnable()//启用时从摄像机外飞到玩家在的一个点
     {
-        direction = (Vector2.zero - new Vector2(transform.position.x, transform.position.y)).normalized;
+        direction = (new Vector2(playerAt.transform.position.x, playerAt.transform.position.y) - new Vector2(transform.position.x, transform.position.y)).normalized;
         transform.right = direction;
         rb.velocity = direction * speed * 10;
     }
@@ -119,7 +119,7 @@ public class Pumpkin : MonoBehaviour
             //南瓜头逐渐透明
             yield return new WaitForFixedUpdate();//等待一个FixedUpdate帧
         }
-        gameObject.SetActive(false);//ʹ�Ϲ�ͷʧ��
+        gameObject.SetActive(false);//使南瓜头失活
     }
 
 }
