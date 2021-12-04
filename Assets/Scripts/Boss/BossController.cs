@@ -9,7 +9,7 @@ public class BossController : MonoBehaviour
     [Header("BOSS属性")] 
     public float moveSpeed;                 //移动速度
     public float AttackCd = 2f;             //技能的CD
-    private float healthValue = 200f;       //Boss总血量
+    public static float healthValue = 1200f;       //Boss总血量
     private float secondStageHealth;        //进入第二阶段的血量，在awake初始化，为总血量的一半
     private int secondStageCount;           //进入半血的次数，只有第一次掉到半血才进入第二阶段
     public float AttackCdCount;             //技能的计时
