@@ -8,6 +8,8 @@ public class PlayerMovement : MonoBehaviour
     private bool attackPause; //是否要停止攻击判断
     public GameObject sword; //获取到剑的对象
     public int damage; //造成的伤害
+    public TrailRenderer slash;//剑光
+    
 
     [Header("基本组件")] public static Rigidbody2D rb;
     private Collider2D coll;
@@ -72,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
             else//不在战斗则可以进行移动
             {
                 Moving();
-                
+                slash.gameObject.SetActive(false);//启用剑光
                 /*if (shieldState)
                 {
                     Defending(moveInput, getDamage);//如果正在举盾，则进行防御受伤判定
@@ -81,10 +83,11 @@ public class PlayerMovement : MonoBehaviour
                 {
                     isHurt = true;//如果不在举盾，则直接变为受伤状态
                 }*/
-                if (Input.GetMouseButton(0) && endurance >= 15)
+                if (Input.GetMouseButton(0) && endurance >= 15 )
                 {
                     attackTime = 1;
-                    anim.SetInteger("AttackState", attackTime);
+                    anim.SetInteger("AttackState", 1);
+                    slash.gameObject.SetActive(true);
                 }
             }
             DefendingAnim();//随时可以防御
@@ -271,23 +274,24 @@ public class PlayerMovement : MonoBehaviour
         }*/
     }
 
-    void Defending(Vector2 moveInput, int getDamage)
+    void Defending(Vector2 moveInput, int Damage)
     {
-        if (getDamage == 0)//没有收到伤害就是正常的举盾行动
+        if (Damage == 0)//没有收到伤害就是正常的举盾行动
         {
             rb.velocity = defendSpeed * moveInput;//速度设置为防御状态
         }
-        else if (getDamage > 0)//收到伤害时进行伤害值判定
+        else if (Damage > 0)//收到伤害时进行伤害值判定
         {
             rb.velocity = Vector2.zero;//受击止步
-            if (endurance < (getDamage - defendPower))//伤害值大于耐力，则破盾，返回受伤状态
+            if (endurance < (Damage - defendPower))//伤害值大于耐力，则破盾，返回受伤状态
             {
                 endurance = 0;
                 //isHurt = true;//更改受伤状态
             }
             else
             {
-                endurance -= (getDamage - defendPower);
+                endurance -= Damage;//耐力减少等同于原本伤害的数值
+                getDamage -= defendPower;//伤害抵消
             }
         }
     }
@@ -301,7 +305,8 @@ public class PlayerMovement : MonoBehaviour
             anim.Play("hit");//播放受伤动画
             //anim.SetBool("isHurt", true);
             //isHurt = false;
-            getDamage = 0;
+            getDamage = 0;//重置伤害
+            attackTime = 0;//打断攻击
         }
     }
 

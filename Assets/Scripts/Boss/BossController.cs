@@ -9,7 +9,7 @@ public class BossController : MonoBehaviour
     [Header("BOSS属性")] 
     public float moveSpeed;                 //移动速度
     public float AttackCd = 2f;             //技能的CD
-    public static float healthValue = 1200f;       //Boss总血量
+    public static float healthValue = 120f;       //Boss总血量
     private float secondStageHealth;        //进入第二阶段的血量，在awake初始化，为总血量的一半
     private int secondStageCount;           //进入半血的次数，只有第一次掉到半血才进入第二阶段
     public float AttackCdCount;             //技能的计时
@@ -87,12 +87,13 @@ public class BossController : MonoBehaviour
     private float xDistance, yDistance;
 
     [Header("场景部件")] 
+    public Light playerLight;   //玩家身上的光
     public Light dirLight;      //场景中的线性光
     public Light headLight;     //Boss南瓜头的点光
     public Light spotLight;    //出口聚光
     public GameObject exit;     //场景出口
     public GameObject BossHp;   //Boss血条
-    
+    public GameObject shadow;   //影子
 
     void Awake()
     {
@@ -205,8 +206,10 @@ public class BossController : MonoBehaviour
             isAttack = true;
             isInSecondStage = true;
             Invoke("OpenPumpkin", 3f);
-            dirLight.enabled = false;//进入第二阶段禁用场景线性光
-            headLight.enabled = false;//禁用boss头骨部分的灯光
+            playerLight.gameObject.SetActive(true);
+            dirLight.gameObject.SetActive(false);//进入第二阶段禁用场景线性光
+            headLight.gameObject.SetActive(false);//禁用boss头骨部分的灯光
+            //shadow.SetActive(false);//关闭影子
             
             //为了确保只进入一次第二阶段
             secondStageCount++;
@@ -231,6 +234,9 @@ public class BossController : MonoBehaviour
             anim.Play("die");
             exit.SetActive(false);//关闭出口墙体，打开出口
             BossHp.SetActive(false);//关闭BOSS血条
+            shadow.SetActive(false);
+            spotLight.gameObject.SetActive(true);
+            SoundManager.Sound.StopMusic();
         }
     }
 
@@ -649,14 +655,16 @@ public class BossController : MonoBehaviour
     {
         isStart = true;
         isIdle = true;
-        headLight.intensity += 1;
+        headLight.intensity = 2;
         BossHp.SetActive(true);
     }
     
     //开启环境光
     public void OpenDirLight()
     {
-        dirLight.enabled = true;
+        dirLight.gameObject.SetActive(true);
+        playerLight.gameObject.SetActive(false);
+        shadow.SetActive(true);
     }
     
     //魔法攻击时调用

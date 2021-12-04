@@ -50,6 +50,9 @@ TagManager:
   - name: Wall
     uniqueID: 1243284501
     locked: 0
+  - name: Boss
+    uniqueID: 2541229369
+    locked: 0
   - name: Spirtes
     uniqueID: 1771452699
     locked: 0

@@ -7,6 +7,7 @@ public class PlayerHurt : MonoBehaviour
     [SerializeField] private float healthTimer, healthTimerSet = 5, collapseTimer, collapseTimerSet;
     [SerializeField] private int healthSet = 120, healthIncrease = 1;
     public static int health;
+    public GameObject DeathPanel;//死亡面板
     //public bool isHurt;
 
     // Start is called before the first frame update
@@ -89,7 +90,9 @@ public class PlayerHurt : MonoBehaviour
     {
         if (health <= 0)
         {
-            PlayerMovement.anim.SetBool("Death", true);
+            PlayerMovement.anim.Play("die");
+            PlayerMovement.anim.SetBool("IsDie",true);
+            DeathPanel.SetActive(true);
         }
     }
 }

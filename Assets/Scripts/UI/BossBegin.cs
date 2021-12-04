@@ -34,6 +34,7 @@ public class BossBegin : MonoBehaviour
             Boss.GetComponent<Animator>().Play("start");//激活boss
             Boss.GetComponent<BossController>().OpenDirLight();
             Invoke("EnableBoss",4.5f);
+            SoundManager.Sound.MusicPlay();
         }
     }
 

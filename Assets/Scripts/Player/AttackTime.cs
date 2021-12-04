@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AttackTime : MonoBehaviour
 {
-    public float attackTimer, attackTimerSet = 0.7f;
+    public static float attackTimer, attackTimerSet = 0.7f;
     public float thirdTimer, thirdTimerSet = 0.15f;//第三阶段硬直
     public bool stateLock;//阶段转换锁，开启时可以转阶段
 
@@ -25,12 +25,12 @@ public class AttackTime : MonoBehaviour
     {
         if (PlayerMovement.endurance >= 15)
         {
-            attackTimer = attackTimerSet;
+            
             if (attackTimer > 0)
             {
                 if (Input.GetMouseButtonDown(0))//每个阶段读取一次攻击输入
                 {
-
+                    attackTimer = attackTimerSet;
                     if (PlayerMovement.attackTime < 3)
                     {
                         stateLock = true;//小于3阶段时，阶段锁开

@@ -6,6 +6,7 @@ using UnityEngine.Audio;
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager Sound;
+    //public AudioMixer audioMixer;
 
 
     [SerializeField] private AudioSource MusicAudioSource, PlayerSFXAudioSource, BossSFXAudioSource;
@@ -17,23 +18,23 @@ public class SoundManager : MonoBehaviour
         Sound = this;
     }
 
-    //Íæ¼ÒÌØĞ§ÒôÆµ²¥·Å
+    //ç©å®¶ç‰¹æ•ˆéŸ³é¢‘æ’­æ”¾
     public void PlayerAudioPlay(string operation)
     {
         PlayerSFXAudioSource.clip = AudioName("player", operation);
         PlayerSFXAudioSource.Play();
     }
 
-    //BossÌØĞ§ÒôÆµ²¥·Å
+    //Bossç‰¹æ•ˆéŸ³é¢‘æ’­æ”¾
     public void BossAudioPlay(string operation)
     {
         BossSFXAudioSource.clip = AudioName("boss", operation);
         BossSFXAudioSource.Play();
     }
 
-    //objectName·ÖÎªplayerºÍboss£¨¶¼Ğ¡Ğ´£©
-    //operation·ÖÎªhurt,attack,defence
-    //ÊäÈë¶ÔÏóÃûºÍ²Ù×÷ĞĞÎªÊä³ö¶ÔÓ¦ÒôÆµ
+    //objectNameåˆ†ä¸ºplayerå’Œbossï¼ˆéƒ½å°å†™ï¼‰
+    //operationåˆ†ä¸ºhurt,attack,defence
+    //è¾“å…¥å¯¹è±¡åå’Œæ“ä½œè¡Œä¸ºè¾“å‡ºå¯¹åº”éŸ³é¢‘
     public AudioClip AudioName(string objectName,string operation)
     {
         if(objectName == "player")
@@ -51,11 +52,17 @@ public class SoundManager : MonoBehaviour
         return null;
     }
     
-    //±³¾°ÒôÀÖ²¥·Å
+    //èƒŒæ™¯éŸ³ä¹æ’­æ”¾
     public void MusicPlay()
     {
         MusicAudioSource.clip = BackgroundMusic;
         MusicAudioSource.Play();
+    }
+
+    public void StopMusic()
+    {
+        MusicAudioSource.Stop();
+       
     }
 
 }
