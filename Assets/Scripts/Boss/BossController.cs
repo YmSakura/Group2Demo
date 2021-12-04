@@ -9,7 +9,7 @@ public class BossController : MonoBehaviour
     [Header("BOSS属性")] 
     public float moveSpeed;                 //移动速度
     public float AttackCd = 2f;             //技能的CD
-    private float healthValue = 200f;       //Boss总血量
+    public static float healthValue = 1200f;       //Boss总血量
     private float secondStageHealth;        //进入第二阶段的血量，在awake初始化，为总血量的一半
     private int secondStageCount;           //进入半血的次数，只有第一次掉到半血才进入第二阶段
     public float AttackCdCount;             //技能的计时
@@ -256,18 +256,18 @@ public class BossController : MonoBehaviour
     public void UpdateChaseStatus()
     {
         //出了boss攻击范围才可以追击
-        if (!isInAttackScope && !isAttack && !isAttacked)
+        if (!isInAttackScope && !isAttack && !isAttacked && isStart)
         {
             //如果玩家位于追击范围内就进行追击，停止巡逻
             if (Physics2D.OverlapArea(leftChasePoint.position, rightChasePoint.position, playerLayer))
             {
                 //第一次进入追击范围时播放start动画
-                if (startCount.Equals(0))
-                {
-                    anim.SetTrigger("Start");
-                    //确保只start一次
-                    startCount++;
-                }
+                // if (startCount.Equals(0))
+                // {
+                //     anim.SetTrigger("Start");
+                //     //确保只start一次
+                //     startCount++;
+                // }
                 
                 isChase = true;
                 isPatrol = false;
@@ -324,7 +324,7 @@ public class BossController : MonoBehaviour
             //只要进入攻击范围，就停止chase，通过内部函数来追击
             isInAttackScope = true;
             isChase = false;
-            Debug.Log(yDistance);
+            //Debug.Log(yDistance);
             //如果玩家与boss的垂直距离大于指定距离，boss就向y方向移动
             if (yDistance > attackScopeRadius/4)
             {
