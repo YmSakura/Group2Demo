@@ -19,9 +19,9 @@ public class AttackTime : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AttackCheck();
+        NextAtaack();
     }
-    void AttackCheck()
+    void NextAtaack()
     {
         if (PlayerMovement.endurance >= 15)
         {

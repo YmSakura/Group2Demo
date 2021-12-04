@@ -6,7 +6,6 @@ public class PlayerMovement : MonoBehaviour
 {
     public static int attackTime = 0; //攻击阶段
     private bool attackPause; //是否要停止攻击判断
-    private float attackTimer, attackTimerSet = 1.0f; //攻击计时器
     public GameObject sword; //获取到剑的对象
     public int damage; //造成的伤害
 
@@ -59,7 +58,6 @@ public class PlayerMovement : MonoBehaviour
         endurance = enduranceSet;
         enduranceTimer = enduranceTimerSet;
         runTimer = runTimerSet;
-        attackTimer = attackTimerSet;
     }
 
     // Update is called once per frame
@@ -317,7 +315,6 @@ public class PlayerMovement : MonoBehaviour
     {
         attackTime = 0;
         anim.SetInteger("AttackState", 0);
-        attackTimer = attackTimerSet;
         attackPause = false;
         anim.SetBool("AttackPause", false);
     }
