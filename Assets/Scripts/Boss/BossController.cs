@@ -256,18 +256,18 @@ public class BossController : MonoBehaviour
     public void UpdateChaseStatus()
     {
         //出了boss攻击范围才可以追击
-        if (!isInAttackScope && !isAttack && !isAttacked)
+        if (!isInAttackScope && !isAttack && !isAttacked && isStart)
         {
             //如果玩家位于追击范围内就进行追击，停止巡逻
             if (Physics2D.OverlapArea(leftChasePoint.position, rightChasePoint.position, playerLayer))
             {
                 //第一次进入追击范围时播放start动画
-                if (startCount.Equals(0))
-                {
-                    anim.SetTrigger("Start");
-                    //确保只start一次
-                    startCount++;
-                }
+                // if (startCount.Equals(0))
+                // {
+                //     anim.SetTrigger("Start");
+                //     //确保只start一次
+                //     startCount++;
+                // }
                 
                 isChase = true;
                 isPatrol = false;
@@ -324,7 +324,7 @@ public class BossController : MonoBehaviour
             //只要进入攻击范围，就停止chase，通过内部函数来追击
             isInAttackScope = true;
             isChase = false;
-            Debug.Log(yDistance);
+            //Debug.Log(yDistance);
             //如果玩家与boss的垂直距离大于指定距离，boss就向y方向移动
             if (yDistance > attackScopeRadius/4)
             {
