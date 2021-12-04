@@ -214,8 +214,7 @@ public class BossController : MonoBehaviour
             //更新死亡状态
             isDie = true;
             //关闭南瓜头
-            pumpkin.SetActive(false);
-            pumpkin.GetComponent<Pumpkin>().ready = false;
+            pumpkin.GetComponent<Pumpkin>().Death();
             //开启播放死亡动画，动画结束时设置StartDieAnim为false，避免循环播放
             anim.SetBool("StartDieAnim", true);
         }
