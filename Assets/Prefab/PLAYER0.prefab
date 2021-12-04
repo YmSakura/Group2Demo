@@ -490,6 +490,7 @@ MonoBehaviour:
   collapseTimerSet: 0
   healthSet: 120
   healthIncrease: 1
+  isHurt: 0
 --- !u!114 &8599526541393525440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -508,9 +509,10 @@ MonoBehaviour:
   runSpeed: 150
   runCost: 1
   enduranceSet: 100
-  enduranceIncrease: 20
+  enduranceTimer: 0
+  enduranceTimerSet: 0.1
+  enduranceCD: 0
   rollSpeed: 0.5
-  rollCost: 34
   defendSpeed: 20
   defendPower: 8
   defendCost: 0
@@ -537,11 +539,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2366143616908411843}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a32496f79167f2543bbce55be15b4265, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackTimer: 0
+  attackTimerSet: 0.5
+  thirdTimer: 0
+  thirdTimerSet: 0.8
 --- !u!1 &4677219855799632094
 GameObject:
   m_ObjectHideFlags: 0

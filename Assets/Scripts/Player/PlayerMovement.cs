@@ -66,8 +66,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!rollLock)
         {
-            Moving();
-            DefendingAnim();
+            if (attackTime == 0)
+            {
+                Moving();
+                DefendingAnim();
+            }
             if (attackTime == 0 && Input.GetMouseButton(0) && endurance >= 15)
             {
                 attackTime = 1;
@@ -277,6 +280,15 @@ public class PlayerMovement : MonoBehaviour
         GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = false;
         endurance -= 15;
         enduranceCD = enduranceCDSet;
+    }
+
+    void AttackStateChange()
+    {
+        if (GameObject.Find("PLAYER0").GetComponent<AttackTime>().stateLock == true)
+        {
+            attackTime++;
+            anim.SetInteger("AttackState", attackTime);
+        }
     }
 }
 
