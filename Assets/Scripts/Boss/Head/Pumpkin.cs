@@ -119,7 +119,7 @@ public class Pumpkin : MonoBehaviour
             //南瓜头逐渐透明
             yield return new WaitForFixedUpdate();//等待一个FixedUpdate帧
         }
-        gameObject.SetActive(false);//使南瓜头失活
+        gameObject.SetActive(false);//ʹ�Ϲ�ͷʧ��
     }
 
 }
