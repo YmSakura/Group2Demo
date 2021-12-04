@@ -5,11 +5,11 @@ using UnityEngine;
 public class AttackTime : MonoBehaviour
 {
     public float attackTimer, attackTimerSet = 0.7f;
-    public float thirdTimer, thirdTimerSet = 0.15f;//第三阶段硬直
-    public bool stateLock;//阶段转换锁，开启时可以转阶段
+    public float thirdTimer, thirdTimerSet = 0.15f;
+    public bool stateLock;
 
     // Start is called before the first frame update
-    private void OnEnable()//每当启用连击次数判断时重置条件
+    private void OnEnable()
     {
         stateLock = false;
         attackTimer = attackTimerSet;
@@ -19,36 +19,36 @@ public class AttackTime : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AttackCheck();
+        AttackCheckTest();
     }
-    void AttackCheck()
+    void AttackCheckTest()
     {
         if (PlayerMovement.endurance >= 15)
         {
-            attackTimer = attackTimerSet;
             if (attackTimer > 0)
             {
-                if (Input.GetMouseButtonDown(0))//每个阶段读取一次攻击输入
+                if (Input.GetMouseButtonDown(0))
                 {
+                    attackTimer = attackTimerSet;
 
                     if (PlayerMovement.attackTime < 3)
                     {
-                        stateLock = true;//小于3阶段时，阶段锁开
+                        stateLock = true;
                     }
 
                     if (PlayerMovement.attackTime == 3)
                     {
-                        thirdTimer -= Time.deltaTime;//开启第三阶段硬直计时
+                        thirdTimer -= Time.deltaTime;
                         PlayerMovement.rb.velocity = Vector2.zero;
                         if (thirdTimer <= 0)
                         {
+                            this.enabled = false;
                             PlayerMovement.anim.SetBool("AttackPause", true);
-                            this.enabled = false;//禁用该脚本
                         }
                     }
                     else
                     {
-                        this.enabled = false;//禁用该脚本
+                        this.enabled = false;
                     }
                 }
                 else

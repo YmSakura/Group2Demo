@@ -38,7 +38,6 @@ public class PlayerMovement : MonoBehaviour
     private int rollCost = 20; //翻滚耐力消耗
 
     [Header("防御")]
-    public GameObject shield; //获取到盾的对象
     public float defendSpeed = 5; //防御移速
     public int defendPower = 8; //防御值
     public static bool isHurt; //受伤状态判断
@@ -230,16 +229,14 @@ public class PlayerMovement : MonoBehaviour
     //普通防御（动画+动画事件）
     void DefendingAnim()
     {
-        shield.GetComponent<Collider2D>().enabled = true;//启用盾牌碰撞器
         if (endurance > 0 && Input.GetMouseButton(1))
         {
-            shieldState = true;//举盾状态
+            shieldState = true;
             anim.SetBool("shieldState", shieldState);
         }
         else if (endurance <= 0 || !Input.GetMouseButton(1))
         {
-            shield.GetComponent<Collider2D>().enabled = false;//禁用盾牌碰撞器
-            shieldState = false;//放下盾牌
+            shieldState = false;
             anim.SetBool("shieldState", shieldState);
         }
     }
@@ -248,15 +245,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if (getDamage == 0)//没有收到伤害就是正常的举盾行动
         {
-            rb.velocity = defendSpeed * moveInput;//速度设置为防御状态
+            rb.velocity = defendSpeed * moveInput;
         }
         else if (getDamage > 0)//收到伤害时进行伤害值判定
         {
-            rb.velocity = Vector2.zero;//受击止步
+            rb.velocity = -walkSpeed * moveInput;
             if (endurance < (getDamage - defendPower))//伤害值大于耐力，则破盾，返回受伤状态
             {
                 endurance = 0;
-                isHurt = true;//更改受伤状态
+                isHurt = true;
             }
             else
             {
@@ -268,10 +265,10 @@ public class PlayerMovement : MonoBehaviour
     //攻击（仅有动画）
     void AttackCheck()
     {
-        GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = true;//启用AttackTime连击次数计数脚本
+        GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = true;
     }
 
-    void ResetAttack()//连击条件重置
+    void ResetAttack()
     {
         attackTime = 0;
         anim.SetInteger("AttackState", attackTime);
@@ -280,17 +277,17 @@ public class PlayerMovement : MonoBehaviour
         anim.SetBool("AttackPause", attackPause);
     }
 
-    void AttackCost()//每次攻击带来的影响
+    void AttackCost()
     {
-        GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = false;//重置AttackTime连击次数计数脚本
+        GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = false;
         endurance -= 15;
         enduranceCD = enduranceCDSet;
-        sword.GetComponent<Sword>().HurtAble();//剑的攻击脚本下，设置为可造成伤害
+        sword.GetComponent<Sword>().HurtAble();
     }
 
-    void AttackStateChange()//连击转阶段
+    void AttackStateChange()
     {
-        if (GameObject.Find("PLAYER0").GetComponent<AttackTime>().stateLock == true)//转换锁开启时才可以转阶段
+        if (GameObject.Find("PLAYER0").GetComponent<AttackTime>().stateLock == true)
         {
             attackTime++;
             anim.SetInteger("AttackState", attackTime);
