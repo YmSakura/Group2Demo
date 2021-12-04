@@ -15024,6 +15024,27 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1219230539 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2366143616908411843, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
+  m_PrefabInstance: {fileID: 8599526541393525437}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1219230547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219230539}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32496f79167f2543bbce55be15b4265, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackTimer: 0
+  attackTimerSet: 0.5
+  thirdTimer: 0
+  thirdTimerSet: 0.8
 --- !u!1 &1440259543
 GameObject:
   m_ObjectHideFlags: 0
@@ -15718,14 +15739,6 @@ PrefabInstance:
     - target: {fileID: 1962787026, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -8.69
-      objectReference: {fileID: 0}
-    - target: {fileID: 33344950311550528, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 33344950311550528, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
-      propertyPath: attackTimerSet
-      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 292192419263362676, guid: d64db4c70b27d334490f6aed2981b059, type: 3}
       propertyPath: m_RootOrder
