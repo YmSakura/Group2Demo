@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Wall
   - Boss
+  - Shootable
   layers:
   - Default
   - TransparentFX
