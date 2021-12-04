@@ -10,7 +10,7 @@ public class Pumpkin : MonoBehaviour
     [SerializeField] private Collider2D col;
     [SerializeField] private GameObject fireballPrefab;
 
-    private bool ready;
+    public bool ready;
     private float shootInterval=3f;         //射击CD
     private float shootTimer=0f;            //上次射击时间
     private float shootTimes=0;             //射击计数器
@@ -33,7 +33,7 @@ public class Pumpkin : MonoBehaviour
     {
         direction = (Vector2.zero - new Vector2(transform.position.x, transform.position.y)).normalized;
         transform.right = direction;
-        rb.velocity = direction * speed*10;
+        rb.velocity = direction * speed * 10;
     }
 
     // Update is called once per frame
