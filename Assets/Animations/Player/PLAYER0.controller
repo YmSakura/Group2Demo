@@ -398,8 +398,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 1
-    m_ConditionEvent: isIdling
+  - m_ConditionMode: 6
+    m_ConditionEvent: moveSpeed
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 6029332562016428018}
@@ -693,18 +693,6 @@ AnimatorController:
   m_Name: PLAYER0
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: isIdling
-    m_Type: 4
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 0}
-  - m_Name: isMoving
-    m_Type: 4
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 0}
   - m_Name: shieldState
     m_Type: 4
     m_DefaultFloat: 0
@@ -799,9 +787,9 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 1
-    m_ConditionEvent: isMoving
-    m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: moveSpeed
+    m_EventTreshold: 2
   - m_ConditionMode: 1
     m_ConditionEvent: shieldState
     m_EventTreshold: 0
@@ -1220,8 +1208,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 1
-    m_ConditionEvent: isIdling
+  - m_ConditionMode: 6
+    m_ConditionEvent: moveSpeed
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: shieldState
@@ -1295,7 +1283,7 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 4
+  - m_ConditionMode: 6
     m_ConditionEvent: moveSpeed
     m_EventTreshold: 0.1
   m_DstStateMachine: {fileID: 0}
@@ -1428,8 +1416,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 1
-    m_ConditionEvent: isMoving
+  - m_ConditionMode: 3
+    m_ConditionEvent: moveSpeed
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -1600130415392329864}
@@ -1525,9 +1513,9 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 1
-    m_ConditionEvent: isMoving
-    m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: moveSpeed
+    m_EventTreshold: 1
   - m_ConditionMode: 1
     m_ConditionEvent: shieldState
     m_EventTreshold: 0

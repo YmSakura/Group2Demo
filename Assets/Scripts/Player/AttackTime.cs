@@ -5,7 +5,7 @@ using UnityEngine;
 public class AttackTime : MonoBehaviour
 {
     public float attackTimer, attackTimerSet = 0.7f;
-    public float thirdTimer, thirdTimerSet = 0.8f;
+    public float thirdTimer, thirdTimerSet = 0.15f;
     public bool stateLock;
 
     // Start is called before the first frame update
@@ -25,20 +25,17 @@ public class AttackTime : MonoBehaviour
     {
         if (PlayerMovement.endurance >= 15)
         {
-            if(attackTimer > 0)
+            if (attackTimer > 0)
             {
                 if (Input.GetMouseButtonDown(0))
                 {
                     attackTimer = attackTimerSet;
 
-                    stateLock = true;
-                    /*PlayerMovement.attackTime++;
-                    PlayerMovement.anim.SetInteger("AttackState", PlayerMovement.attackTime);*/
-
-                    if (PlayerMovement.attackTime > 3)
+                    if (PlayerMovement.attackTime < 3)
                     {
-                        PlayerMovement.attackTime = 3;
+                        stateLock = true;
                     }
+
                     if (PlayerMovement.attackTime == 3)
                     {
                         thirdTimer -= Time.deltaTime;
@@ -57,19 +54,17 @@ public class AttackTime : MonoBehaviour
                 else
                 {
                     attackTimer -= Time.deltaTime;
-                    //Debug.Log(attackTimer);
                 }
             }
             else
             {
-                PlayerMovement.anim.SetBool("AttackPause", true);
+                //PlayerMovement.anim.SetBool("AttackPause", true);
                 this.enabled = false;
             }
         }
-        else
-        {
-            PlayerMovement.anim.SetBool("AttackPause", true);
-            this.enabled = false;
-        }
+        /* else
+         {
+             stateLock = false;
+         }*/
     }
 }
