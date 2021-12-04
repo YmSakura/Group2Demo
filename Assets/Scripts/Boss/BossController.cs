@@ -152,6 +152,7 @@ public class BossController : MonoBehaviour
         anim.SetBool("IsIdle", isIdle);
         anim.SetBool("IsWalk", isWalk);
         anim.SetBool("IsDie", isDie);
+        anim.SetBool("IsAttack", isAttack);
         anim.SetBool("CanMagicAttack", canMagicAttack);
         anim.SetInteger("SprintCount", sprintCount);
         anim.SetBool("CanEnergyStorage", canEnergyStorage);
@@ -166,7 +167,7 @@ public class BossController : MonoBehaviour
     public void BeAttacked(float damageValue)
     {
         //只有在idle和walk状态下才可以播放受击动画（意味着在释放技能时要关闭Idle和Walk）
-        if ((isIdle || isWalk) && !isDie )
+        if ((isIdle || isWalk) && !isDie && !isAttack)
         {
             isAttacked = true;
             //SoundManager.Sound.AudioName("boss", "hurt");
@@ -192,7 +193,8 @@ public class BossController : MonoBehaviour
         if (healthValue < secondStageHealth && secondStageCount.Equals(0))
         {
             //释放扔头技能
-            anim.SetTrigger(headFly);
+            anim.SetBool(headFly, true);
+            isAttack = true;
             isInSecondStage = true;
             Invoke("OpenPumpkin", 3f);
             
@@ -214,12 +216,18 @@ public class BossController : MonoBehaviour
             //更新死亡状态
             isDie = true;
             //关闭南瓜头
-            pumpkin.GetComponent<Pumpkin>().Death();
+            StartCoroutine(pumpkin.GetComponent<Pumpkin>().Death());
             //开启播放死亡动画，动画结束时设置StartDieAnim为false，避免循环播放
             anim.SetBool("StartDieAnim", true);
         }
     }
 
+    //扔头动画结束时调用
+    void CloseHeadFly()
+    {
+        anim.SetBool(headFly, false);
+    }
+    
     //开启南瓜头
     void OpenPumpkin()
     {
@@ -270,7 +278,7 @@ public class BossController : MonoBehaviour
         }
         
         //当玩家处于追击范围内 并且位于攻击范围外才可以追击
-        if (isChase && !isDie && isStart && !isEnergyStorage)
+        if (isChase && !isDie && isStart && !isEnergyStorage && !isAttack && !isAttacked)
         {
             FlipTo(playerTransform);
             isWalk = true;
@@ -278,7 +286,7 @@ public class BossController : MonoBehaviour
                 moveSpeed * Time.deltaTime);
             
             //玩家超出一定距离时boss可以冲刺到玩家身边(第二阶段)
-            if (xDistance > attackScopeRadius * 3.5 && isInSecondStage)
+            if (xDistance > attackScopeRadius * 2.5 && isInSecondStage)
             {
                 canEnergyStorage = true;
             }
@@ -311,7 +319,7 @@ public class BossController : MonoBehaviour
                 canAttack = false;
                 
                 //释放技能和蓄力时无法移动
-                if (!isAttack && isStart && !isDie && !isEnergyStorage)
+                if (!isAttack && isStart && !isDie && !isEnergyStorage && !isAttacked)
                 {
                     FlipTo(playerTransform);
                     isWalk = true;
@@ -320,7 +328,7 @@ public class BossController : MonoBehaviour
                         moveSpeed * Time.deltaTime);
                 }
             }
-            else if (yDistance <= attackScopeRadius / 4 && xDistance <= attackScopeRadius)
+            else if (yDistance <= attackScopeRadius / 4 && xDistance <= attackScopeRadius * 0.75)
             {
                 //x距离足够小时才可以释放锤击
                 if (xDistance <= attackScopeRadius / 2)
@@ -347,7 +355,8 @@ public class BossController : MonoBehaviour
     {
         if (canAttack)
         {
-            if (yDistance <= attackScopeRadius / 4 && xDistance <= attackScopeRadius * 1.25)
+            //玩家到达指定范围后boss不再移动
+            if (yDistance <= attackScopeRadius / 4 && xDistance <= attackScopeRadius * 1.1)
             {
                 isIdle = true;
                 isWalk = false;
@@ -368,32 +377,28 @@ public class BossController : MonoBehaviour
                 {
                     //进入第二阶段近距离攻击只有横划和竖劈
                     randomInt = Random.Range(0, 3);
+                    anim.SetInteger("RandomInt", randomInt);
                 }
                 else
                 {
-                    //随机释放横划、竖劈和锤击
+                    //第一阶段随机释放横划、竖劈和锤击
                     randomInt = Random.Range(0, 4);
-                }
-
-                anim.SetInteger("RandomInt", randomInt);
-
-                if (randomInt.Equals(3))
-                {
-                    //当随机到锤击时，检测距离是否足够，如果不够就释放横划和竖劈
-                    if (canHammerBlow)
+                    if (randomInt.Equals(3))
                     {
-                        anim.SetInteger("RandomInt", randomInt);
-                        canHammerBlow = false;
-                    }
-                    else
-                    {
-                        randomInt = Random.Range(0, 3);
-                        anim.SetInteger("RandomInt", randomInt);
+                        //当随机到锤击时，检测距离是否足够，如果不够就释放横划和竖劈
+                        if (canHammerBlow)
+                        {
+                            anim.SetInteger("RandomInt", 3);
+                            canHammerBlow = false;
+                        }
+                        else
+                        {
+                            randomInt = Random.Range(0, 3);
+                            anim.SetInteger("RandomInt", randomInt);
+                        }
                     }
                 }
-
-                isIdle = false;
-
+                
             }
 
             //计算cd
@@ -460,13 +465,7 @@ public class BossController : MonoBehaviour
             }
         }
     }
-
-    //竖劈动画的启动
-    void VerticalAttack()
-    {
-        anim.SetTrigger(verticalAttack);
-    }
-
+    
     //竖劈蓄力时boss的转向，在动画事件中调用
     void VerticalAttackDirection()
     {
@@ -476,9 +475,6 @@ public class BossController : MonoBehaviour
     //竖劈的效果，竖劈动画时通过event调用
     void VerticalAttackEffect()
     {
-        //开启竖劈技能的范围显示
-        verticalAttackScope.gameObject.SetActive(true);
-
         //获取矩形对角线两顶点
         Transform leftTop = verticalAttackScope.GetChild(0);
         Transform rightBottom = verticalAttackScope.GetChild(1);
@@ -507,18 +503,19 @@ public class BossController : MonoBehaviour
 
         }
     }
-
+    
+    //开启竖劈技能的范围显示
+    void OpenVerticalAttackScope()
+    {
+        verticalAttackScope.gameObject.SetActive(true);
+    }
+    
     //关闭竖劈技能范围显示，动画中调用
     void CloseVerticalAttackScope()
     {
         verticalAttackScope.gameObject.SetActive(false);
     }
-
-    //横划动画的启动
-    void HorizontalAttack()
-    {
-        anim.SetTrigger(horizontalAttack);
-    }
+    
 
     //开启和关闭横划的检测范围(碰撞体)
     void OpenHorizontalAttackScope()
@@ -529,12 +526,7 @@ public class BossController : MonoBehaviour
     {
         horizontalAttackScope.SetActive(false);
     }
-
-    //锤击动画的启动
-    void HammerBlow()
-    {
-        anim.SetTrigger(hammerBlow);
-    }
+    
 
     //开启和关闭左右两侧圆形碰撞体
     void HammerBlowRight()
@@ -564,17 +556,7 @@ public class BossController : MonoBehaviour
     {
         armCollider.enabled = false;
     }
-
-    // //魔法攻击
-    // //全图范围内获取Player坐标，生成一个红色圆圈，延迟爆炸
-    // void MagicAttack()
-    // {
-    //     //当处于第二阶段并且生命值下降到一定数值时释放
-    //     if (canMagicAttack)
-    //     {
-    //         anim.SetBool("CanMagicAttack", true);
-    //     }
-    // }
+    
 
     //index代表是第几个圆圈，动画中boss三次举手时调用
     void OpenMagicAttackScope(int index)
@@ -695,7 +677,7 @@ public class BossController : MonoBehaviour
     {
         FlipTo(playerTransform);
         transform.position = Vector2.MoveTowards(transform.position, playerTransform.position,
-            moveSpeed * 10 * Time.deltaTime);
+            moveSpeed * 5 * Time.deltaTime);
     }
     //每次冲刺结束时调用
     void CloseSprint()

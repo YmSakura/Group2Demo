@@ -61,7 +61,7 @@ public class Pumpkin : MonoBehaviour
 
     void checkReady()
     {
-        if (Mathf.Abs(transform.position.x) < 1 || Mathf.Abs(transform.position.y) < 1)//??????(??1,??1)????????????æ¹¥??
+        if (Mathf.Abs(transform.position.x) < 1 || Mathf.Abs(transform.position.y) < 1)//??????(??1,??1)????????????œ£??
         {
             ready = true;
             col.enabled = true;
@@ -73,7 +73,7 @@ public class Pumpkin : MonoBehaviour
     private void MoveAndTurn()
     {
 
-        direction = (playerTrans - new Vector2(transform.position.x, transform.position.y)).normalized;//?????????Ğ½?
+        direction = (playerTrans - new Vector2(transform.position.x, transform.position.y)).normalized;//?????????§ß?
         transform.right = direction;//??????
         rb.velocity = direction * speed;//????
     }
@@ -103,7 +103,7 @@ public class Pumpkin : MonoBehaviour
     protected virtual void Fire()
     {
         GameObject fireball = ObjectPool.Instance.GetObject(fireballPrefab);    //????????????
-        fireball.transform.position = transform.position;                       //???????????????Î»??
+        fireball.transform.position = transform.position;                       //???????????????¦Ë??
         fireball.GetComponent<FireBall>().SetSpeed(direction);                  //????????????
     }
 
@@ -116,10 +116,10 @@ public class Pumpkin : MonoBehaviour
         while (sprite.color.a > 0)
         {
             sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a - 0.1f);
-            //????????Ğ¡
-            yield return new WaitForFixedUpdate();//ç­‰å¾…ä¸€ä¸ªFixedUpdateå¸§
+            //????????§³
+            yield return new WaitForFixedUpdate();//µÈ´ıÒ»¸öFixedUpdateÖ¡
         }
-        gameObject.SetActive(false);//ä½¿å—ç“œå¤´å¤±æ´»
+        gameObject.SetActive(false);//Ê¹ÄÏ¹ÏÍ·Ê§»î
     }
 
 }
