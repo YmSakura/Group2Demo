@@ -36,7 +36,7 @@ public class PlayerHurt : MonoBehaviour
     //血量回复
     void Curing()
     {
-        if (health < healthSet)
+        if (health < healthSet)//血量回复计时器
         {
             if (healthTimer != 0)
             {
@@ -83,6 +83,7 @@ public class PlayerHurt : MonoBehaviour
         PlayerMovement.anim.SetBool("isHurt", isHurt);
     }
 
+    //死亡条件判断
     void DeadJudge()
     {
         if (health <= 0)
