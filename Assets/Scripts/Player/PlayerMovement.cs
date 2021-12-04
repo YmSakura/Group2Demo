@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 rollDirction;//翻滚方向
     public static bool rollLock; //翻滚锁定
     [SerializeField]private float rollSpeed = 15f; //翻滚移速
-    private float rollSpeedMultiplier = 3f;//翻滚速度乘数,用于递减翻滚速度
+    private float rollSpeedMultiplier = 2.5f;//翻滚速度乘数,用于递减翻滚速度
     private int rollCost = 20; //翻滚耐力消耗
     
     [Header("防御")]
@@ -66,6 +66,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!rollLock)
         {
+            Moving();
             DefendingAnim();
             if (attackTime == 0 && Input.GetMouseButton(0) && endurance >= 15)
             {
@@ -89,14 +90,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!rollLock)
-        {
-            Moving();
-        }
-        else
+        if (rollLock)
         {
             rb.velocity = rollDirction * rollSpeed;
         }
+        
     }
 
     
