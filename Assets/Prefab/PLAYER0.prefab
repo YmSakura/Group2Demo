@@ -828,8 +828,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sword: {fileID: 6080845902667509911}
   damage: 0
-  walkSpeed: 8
-  runSpeed: 12
+  walkSpeed: 2
+  runSpeed: 6
   runCost: 1
   enduranceSet: 100
   enduranceTimer: 0

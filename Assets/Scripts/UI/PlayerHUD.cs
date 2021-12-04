@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class PlayerHUD : MonoBehaviour
 {
-    public Slider HPSlider, enduranceSlider;
+    public Slider HPSlider, enduranceSlider,bossHPSlider;
 
 
     // Start is called before the first frame update
@@ -19,5 +19,6 @@ public class PlayerHUD : MonoBehaviour
     {
         HPSlider.value = PlayerHurt.health;
         enduranceSlider.value = PlayerMovement.endurance;
+        bossHPSlider.value = BossController.healthValue;
     }
 }

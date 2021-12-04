@@ -18,8 +18,8 @@ public class PlayerMovement : MonoBehaviour
     private bool runEnabled;//是否允许跑步
     private float inputX, inputY; //获取玩家输入的XY方向
     private Vector2 moveInput; //玩家输入的XY单位向量
-    public float walkSpeed = 8, runSpeed = 12; //走，跑 移速
-    public int runCost = 1; //跑步耐力消耗
+    private float walkSpeed = 2.5f, runSpeed = 6; //走，跑 移速
+    private int runCost = 1; //跑步耐力消耗
     private float runTimer, runTimerSet = 0.1f; //跑步耐力消耗计时器
 
     [Header("耐力")]
@@ -27,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
     public static int endurance; //耐力值
     [SerializeField] private float enduranceTimer, enduranceTimerSet = 0.1f; //耐力恢复计时器
     [SerializeField] private float enduranceCD;//耐力CD计时器
-    private const float enduranceCDSet = 1.5f; //耐力CD时间
+    private const float enduranceCDSet = 1.2f; //耐力CD时间
     private const int enduranceIncrease = 2; //耐力回复量
 
     [Header("翻滚")]
@@ -38,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
     private int rollCost = 20; //翻滚耐力消耗
 
     [Header("防御")]
-    public float defendSpeed = 5; //防御移速
+    [SerializeField]private float defendSpeed = 1.5f; //防御移速
     public int defendPower = 8; //防御值
     public static bool isHurt; //受伤状态判断
     public static int getDamage;//收到伤害
