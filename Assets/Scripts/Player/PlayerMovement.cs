@@ -58,7 +58,6 @@ public class PlayerMovement : MonoBehaviour
         endurance = enduranceSet;
         enduranceTimer = enduranceTimerSet;
         runTimer = runTimerSet;
-        attackTimer = attackTimerSet;
     }
 
     // Update is called once per frame
@@ -89,7 +88,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!rollLock)
+        if (!rollLock && attackTime == 0)
         {
             Moving();
         }
@@ -272,7 +271,6 @@ public class PlayerMovement : MonoBehaviour
     {
         attackTime = 0;
         anim.SetInteger("AttackState", attackTime);
-        attackTimer = attackTimerSet;
         attackPause = false;
         anim.SetBool("AttackPause", attackPause);
     }
@@ -281,7 +279,17 @@ public class PlayerMovement : MonoBehaviour
     {
         GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = false;
         endurance -= 15;
+        Debug.Log(endurance);
         enduranceCD = enduranceCDSet;
+    }
+
+    void AttackStateChange()
+    {
+        if (GameObject.Find("PLAYER0").GetComponent<AttackTime>().stateLock == true)
+        {
+            attackTime++;
+            anim.SetInteger("AttackState", attackTime);
+        }
     }
 }
 
