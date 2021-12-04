@@ -86,6 +86,14 @@ public class BossController : MonoBehaviour
     private float attackScopeRadius = 5f;                   //攻击范围圆形的半径
     private float xDistance, yDistance;
 
+    [Header("场景部件")] 
+    public Light dirLight;      //场景中的线性光
+    public Light headLight;     //Boss南瓜头的点光
+    public Light spotLight;    //出口聚光
+    public GameObject exit;     //场景出口
+    public GameObject BossHp;   //Boss血条
+    
+
     void Awake()
     {
         anim = GetComponent<Animator>();
@@ -185,7 +193,7 @@ public class BossController : MonoBehaviour
             if (droppedHealth <= 0)
             {
                 canMagicAttack = true;
-                droppedHealth = 20f;
+                droppedHealth = 150f;
             }
         }
 
@@ -197,6 +205,8 @@ public class BossController : MonoBehaviour
             isAttack = true;
             isInSecondStage = true;
             Invoke("OpenPumpkin", 3f);
+            dirLight.enabled = false;//进入第二阶段禁用场景线性光
+            headLight.enabled = false;//禁用boss头骨部分的灯光
             
             //为了确保只进入一次第二阶段
             secondStageCount++;
@@ -218,7 +228,9 @@ public class BossController : MonoBehaviour
             //关闭南瓜头
             StartCoroutine(pumpkin.GetComponent<Pumpkin>().Death());
             //开启播放死亡动画，动画结束时设置StartDieAnim为false，避免循环播放
-            anim.SetBool("StartDieAnim", true);
+            anim.SetBool("StartDieAnim", true);//我没动，但是这里只播放一次可以用anim.Play()
+            exit.SetActive(false);//关闭出口墙体，打开出口
+            BossHp.SetActive(false);//关闭BOSS血条
         }
     }
 
@@ -639,11 +651,13 @@ public class BossController : MonoBehaviour
         isIdle = true;
     }
     
-    //开始动画结束时调用
-    void StartChase()
+    //开始动画结束时调用->更改为检测区域内按下E调用
+    public void StartChase()
     {
         isStart = true;
         isIdle = true;
+        headLight.intensity += 1;
+        BossHp.SetActive(true);
     }
     
     //魔法攻击时调用
