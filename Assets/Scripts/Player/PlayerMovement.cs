@@ -41,6 +41,7 @@ public class PlayerMovement : MonoBehaviour
     public float defendSpeed = 20; //防御移速
     public int defendPower = 8; //防御值
     public static bool isHurt; //受伤状态判断
+    public static int getDamage;//收到伤害
     public static bool shieldState; //举盾状态
     public int defendCost; //防御耐力消耗
 
@@ -67,8 +68,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!rollLock)
         {
-            Moving();
-            DefendingAnim();
+            if (attackTime == 0)
+            {
+                Moving();
+                DefendingAnim();
+                if (shieldState)
+                {
+                    Defending(moveInput, getDamage);//如果正在举盾，则进行防御受伤判定
+                }
+                else if (!shieldState)
+                {
+                    isHurt = true;//如果不在举盾，则直接变为受伤状态
+                }
+            }
             if (attackTime == 0 && Input.GetMouseButton(0) && endurance >= 15)
             {
                 attackTime = 1;
@@ -220,7 +232,7 @@ public class PlayerMovement : MonoBehaviour
             shieldState = true;
             anim.SetBool("shieldState", shieldState);
         }
-        else
+        else if (endurance <= 0 || !Input.GetMouseButton(1))
         {
             shieldState = false;
             anim.SetBool("shieldState", shieldState);
@@ -229,25 +241,22 @@ public class PlayerMovement : MonoBehaviour
 
     void Defending(Vector2 moveInput, int getDamage)
     {
-        if (!isHurt)
+        if (getDamage == 0)//没有收到伤害就是正常的举盾行动
         {
             rb.velocity = defendSpeed * moveInput;
         }
-        else
+        else if (getDamage > 0)//收到伤害时进行伤害值判定
         {
-            int realDamage = 0;
             rb.velocity = -walkSpeed * moveInput;
-            if (endurance < (getDamage - defendPower))
+            if (endurance < (getDamage - defendPower))//伤害值大于耐力，则破盾，返回受伤状态
             {
                 endurance = 0;
-                realDamage = getDamage;
+                isHurt = true;
             }
             else
             {
                 endurance -= getDamage - defendPower;
             }
-
-            PlayerHurt.health -= realDamage;
         }
     }
 
@@ -289,6 +298,15 @@ public class PlayerMovement : MonoBehaviour
         GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = false;
         endurance -= 15;
         enduranceCD = enduranceCDSet;
+    }
+
+    void AttackStateChange()
+    {
+        if (GameObject.Find("PLAYER0").GetComponent<AttackTime>().stateLock == true)
+        {
+            attackTime++;
+            anim.SetInteger("AttackState", attackTime);
+        }
     }
 }
 

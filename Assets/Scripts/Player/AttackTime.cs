@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class AttackTime : MonoBehaviour
 {
-    public float attackTimer, attackTimerSet = 0.5f;
+    public float attackTimer, attackTimerSet = 0.7f;
     public float thirdTimer, thirdTimerSet = 0.8f;
+    public bool stateLock;
 
     // Start is called before the first frame update
     private void OnEnable()
     {
+        stateLock = false;
         attackTimer = attackTimerSet;
         thirdTimer = thirdTimerSet;
     }
@@ -27,9 +29,12 @@ public class AttackTime : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    PlayerMovement.attackTime++;
                     attackTimer = attackTimerSet;
-                    PlayerMovement.anim.SetInteger("AttackState", PlayerMovement.attackTime);
+
+                    stateLock = true;
+                    /*PlayerMovement.attackTime++;
+                    PlayerMovement.anim.SetInteger("AttackState", PlayerMovement.attackTime);*/
+
                     if (PlayerMovement.attackTime > 3)
                     {
                         PlayerMovement.attackTime = 3;
@@ -52,7 +57,7 @@ public class AttackTime : MonoBehaviour
                 else
                 {
                     attackTimer -= Time.deltaTime;
-                    Debug.Log(attackTimer);
+                    //Debug.Log(attackTimer);
                 }
             }
             else

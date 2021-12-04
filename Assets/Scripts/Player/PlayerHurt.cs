@@ -30,6 +30,7 @@ public class PlayerHurt : MonoBehaviour
         {
             Curing();
         }
+        DeadJudge();
     }
 
     //血量回复
@@ -50,9 +51,13 @@ public class PlayerHurt : MonoBehaviour
     }
 
     //击退击飞
-    public void Repeled(float x, float y)
+    public IEnumerator Repeled(float x, float y)
     {
+        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;
+        PlayerMovement.rb.velocity = new Vector2(-x * PlayerMovement.rb.velocity.x, -y * PlayerMovement.rb.velocity.y);
         Debug.Log("人物被击退");
+        yield return new WaitForSeconds(1);
+        ResetMovement();
     }
 
     //眩晕
@@ -74,6 +79,15 @@ public class PlayerHurt : MonoBehaviour
     public void RemoveHurt()
     {
         isHurt = false;
+        PlayerMovement.getDamage = 0;
         PlayerMovement.anim.SetBool("isHurt", isHurt);
+    }
+
+    void DeadJudge()
+    {
+        if (health <= 0)
+        {
+            PlayerMovement.anim.SetBool("Death", true);
+        }
     }
 }
