@@ -511,6 +511,7 @@ public class BossController : MonoBehaviour
             if (playerHurt)
             {
                 playerHurt.Collapsing(1);
+                PlayerMovement.getDamage = 24;
             }
 
         }

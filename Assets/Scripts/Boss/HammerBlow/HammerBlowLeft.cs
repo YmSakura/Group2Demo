@@ -11,6 +11,7 @@ public class HammerBlowLeft : MonoBehaviour
         if (playerHurt)
         {
             playerHurt.Collapsing(1);
+            PlayerMovement.getDamage = 18;
         }
     }
 }

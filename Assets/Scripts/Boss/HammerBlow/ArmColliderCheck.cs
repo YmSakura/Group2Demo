@@ -12,6 +12,7 @@ public class ArmColliderCheck : MonoBehaviour
         {
             //人物被击退
             playerHurt.Repeled(1,1);
+            PlayerMovement.getDamage = 18;
         }
         
     }
