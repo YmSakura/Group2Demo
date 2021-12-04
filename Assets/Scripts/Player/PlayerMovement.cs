@@ -14,31 +14,31 @@ public class PlayerMovement : MonoBehaviour
     private Collider2D coll;
     public static Animator anim;
 
-    [Header("基本移动")] 
+    [Header("基本移动")]
     private bool runEnabled;//是否允许跑步
     private float inputX, inputY; //获取玩家输入的XY方向
     private Vector2 moveInput; //玩家输入的XY单位向量
-    public float walkSpeed = 5, runSpeed = 10; //走，跑 移速
+    public float walkSpeed = 8, runSpeed = 12; //走，跑 移速
     public int runCost = 1; //跑步耐力消耗
     private float runTimer, runTimerSet = 0.1f; //跑步耐力消耗计时器
 
     [Header("耐力")]
     public int enduranceSet = 100; //耐力上限
     public static int endurance; //耐力值
-    [SerializeField]private float enduranceTimer, enduranceTimerSet = 0.1f; //耐力恢复计时器
-    [SerializeField]private float enduranceCD;//耐力CD计时器
-    private const float enduranceCDSet= 1.5f; //耐力CD时间
+    [SerializeField] private float enduranceTimer, enduranceTimerSet = 0.1f; //耐力恢复计时器
+    [SerializeField] private float enduranceCD;//耐力CD计时器
+    private const float enduranceCDSet = 1.5f; //耐力CD时间
     private const int enduranceIncrease = 2; //耐力回复量
 
-    [Header("翻滚")] 
+    [Header("翻滚")]
     private Vector2 rollDirction;//翻滚方向
     public static bool rollLock; //翻滚锁定
-    [SerializeField]private float rollSpeed = 15f; //翻滚移速
+    [SerializeField] private float rollSpeed = 10; //翻滚移速
     private float rollSpeedMultiplier = 2.5f;//翻滚速度乘数,用于递减翻滚速度
     private int rollCost = 20; //翻滚耐力消耗
-    
+
     [Header("防御")]
-    public float defendSpeed = 20; //防御移速
+    public float defendSpeed = 5; //防御移速
     public int defendPower = 8; //防御值
     public static bool isHurt; //受伤状态判断
     public static int getDamage;//收到伤害
@@ -66,6 +66,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!rollLock)
         {
+            if (attackTime > 0)
+            {
+                rb.velocity = Vector2.zero;
+            }
             if (attackTime == 0)
             {
                 Moving();
@@ -89,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (rollSpeed > 3)
             {
-                rollSpeed -= rollSpeed*rollSpeedMultiplier * Time.deltaTime;
+                rollSpeed -= rollSpeed * rollSpeedMultiplier * Time.deltaTime;
             }
             else
             {
@@ -105,10 +109,10 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.velocity = rollDirction * rollSpeed;
         }
-        
+
     }
 
-    
+
     //人物移动
     void Moving()
     {
@@ -180,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
                 enduranceTimer = 0; //并重置计时器
             }
         }
-        else if(enduranceCD>0)
+        else if (enduranceCD > 0)
         {
             enduranceCD -= Time.fixedDeltaTime; //耐力恢复CD不为0，则加载CD
         }
@@ -263,25 +267,7 @@ public class PlayerMovement : MonoBehaviour
     {
         GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = true;
     }
-    /*void DoAttack(int attackTime)
-    {
-        if (true)
-        {
-        }
 
-        if (attackTime == 1)
-        {
-            anim.SetInteger("AttackState", attackTime);
-        }
-        else if (attackTime == 2)
-        {
-            anim.SetInteger("AttackState", attackTime);
-        }
-        else if (attackTime == 3)
-        {
-            anim.SetInteger("AttackState", attackTime);
-        }
-    }*/
     void ResetAttack()
     {
         attackTime = 0;
@@ -296,6 +282,7 @@ public class PlayerMovement : MonoBehaviour
         GameObject.Find("PLAYER0").GetComponent<AttackTime>().enabled = false;
         endurance -= 15;
         enduranceCD = enduranceCDSet;
+        sword.GetComponent<Sword>().HurtAble();
     }
 
     void AttackStateChange()
@@ -304,6 +291,10 @@ public class PlayerMovement : MonoBehaviour
         {
             attackTime++;
             anim.SetInteger("AttackState", attackTime);
+        }
+        else
+        {
+            PlayerMovement.anim.SetBool("AttackPause", true);
         }
     }
 }
