@@ -32,6 +32,7 @@ public class BossBegin : MonoBehaviour
             panel.SetActive(false);//关闭提示面板
             Entry.SetActive(true);//启用入口墙体，关闭入口
             Boss.GetComponent<Animator>().Play("start");//激活boss
+            Boss.GetComponent<BossController>().OpenDirLight();
             Invoke("EnableBoss",4.5f);
         }
     }

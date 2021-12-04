@@ -227,8 +227,8 @@ public class BossController : MonoBehaviour
             isDie = true;
             //关闭南瓜头
             StartCoroutine(pumpkin.GetComponent<Pumpkin>().Death());
-            //开启播放死亡动画，动画结束时设置StartDieAnim为false，避免循环播放
-            anim.SetBool("StartDieAnim", true);//我没动，但是这里只播放一次可以用anim.Play()
+            //开启播放死亡动画
+            anim.Play("die");
             exit.SetActive(false);//关闭出口墙体，打开出口
             BossHp.SetActive(false);//关闭BOSS血条
         }
@@ -247,10 +247,10 @@ public class BossController : MonoBehaviour
     }
     
     //死亡动画结束时调用，为了只播放一次死亡动画，之后就一直处于die state
-    void CloseDieAnim()
-    {
-        anim.SetBool("StartDieAnim", false);
-    }
+    // void CloseDieAnim()
+    // {
+    //     anim.SetBool("StartDieAnim", false);
+    // }
 
     //检测玩家是否处于追击范围
     public void UpdateChaseStatus()
@@ -261,14 +261,6 @@ public class BossController : MonoBehaviour
             //如果玩家位于追击范围内就进行追击，停止巡逻
             if (Physics2D.OverlapArea(leftChasePoint.position, rightChasePoint.position, playerLayer))
             {
-                //第一次进入追击范围时播放start动画
-                // if (startCount.Equals(0))
-                // {
-                //     anim.SetTrigger("Start");
-                //     //确保只start一次
-                //     startCount++;
-                // }
-                
                 isChase = true;
                 isPatrol = false;
             }
@@ -336,14 +328,14 @@ public class BossController : MonoBehaviour
                     FlipTo(playerTransform);
                     isWalk = true;
                     transform.position = Vector2.MoveTowards(transform.position,
-                        new Vector2(transform.position.x, playerTransform.position.y - 2f),
+                        new Vector2(transform.position.x, playerTransform.position.y),
                         moveSpeed * Time.deltaTime);
                 }
             }
-            else if (yDistance <= attackScopeRadius / 4 && xDistance <= attackScopeRadius * 0.75)
+            else if (yDistance <= attackScopeRadius / 4 && xDistance <= attackScopeRadius)
             {
                 //x距离足够小时才可以释放锤击
-                if (xDistance <= attackScopeRadius / 2)
+                if (xDistance <= attackScopeRadius / 2.5)
                 {
                     canHammerBlow = true;
                 }
@@ -365,7 +357,7 @@ public class BossController : MonoBehaviour
     //近距离攻击(横划竖劈锤击)，Update中调用
     void CloseAttack()
     {
-        if (canAttack)
+        if (canAttack && isStart)
         {
             //玩家到达指定范围后boss不再移动
             if (yDistance <= attackScopeRadius / 4 && xDistance <= attackScopeRadius * 1.1)
@@ -652,13 +644,19 @@ public class BossController : MonoBehaviour
         isIdle = true;
     }
     
-    //开始动画结束时调用->更改为检测区域内按下E调用
+    //检测区域内按下E后延时调用
     public void StartChase()
     {
         isStart = true;
         isIdle = true;
         headLight.intensity += 1;
         BossHp.SetActive(true);
+    }
+    
+    //开启环境光
+    public void OpenDirLight()
+    {
+        dirLight.enabled = true;
     }
     
     //魔法攻击时调用
