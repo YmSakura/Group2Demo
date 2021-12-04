@@ -432,10 +432,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1111575354}
     - target: {fileID: 5547308953128773493, guid: 0c5d09d451c07a04db347337587392d9, type: 3}
-      propertyPath: moveSpeed
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5547308953128773493, guid: 0c5d09d451c07a04db347337587392d9, type: 3}
       propertyPath: patrolArea
       value: 
       objectReference: {fileID: 88363159}
