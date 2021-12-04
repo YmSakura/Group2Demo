@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 rollDirction;//翻滚方向
     public static bool rollLock; //翻滚锁定
     [SerializeField]private float rollSpeed = 15f; //翻滚移速
-    private float rollSpeedMultiplier = 3f;//翻滚速度乘数,用于递减翻滚速度
+    private float rollSpeedMultiplier = 2.5f;//翻滚速度乘数,用于递减翻滚速度
     private int rollCost = 20; //翻滚耐力消耗
     
     [Header("防御")]
@@ -66,6 +66,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!rollLock)
         {
+            Moving();
             DefendingAnim();
             if (attackTime == 0 && Input.GetMouseButton(0) && endurance >= 15)
             {
@@ -89,14 +90,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!rollLock)
-        {
-            Moving();
-        }
-        else
+        if (rollLock)
         {
             rb.velocity = rollDirction * rollSpeed;
         }
+        
     }
 
     
@@ -114,22 +112,19 @@ public class PlayerMovement : MonoBehaviour
                 transform.localScale = new Vector3(inputX, 1, 1) * 0.08f; //根据输入方向调整左右
             }
 
-            if (Input.GetKey(KeyCode.LeftShift)) //按下左shift跑步
+            if (Input.GetKey(KeyCode.LeftShift) && endurance >= runCost) //按下左shift跑步,并且仅有耐力值大于跑步消耗时才可以跑步
             {
-                if (endurance >= runCost) //当且仅有耐力值大于跑步消耗时才可以跑步
+                rb.velocity = moveInput * runSpeed; //速度设为跑步速度
+                anim.SetInteger("moveSpeed", 2); //动画设置为跑步状态
+                runTimer += Time.fixedDeltaTime; //开始跑步时，跑步计时器开始计时
+                if (runTimer > runTimerSet) //如果跑步计时器超过设定值
                 {
-                    rb.velocity = moveInput * runSpeed; //速度设为跑步速度
-                    anim.SetInteger("moveSpeed", 2); //动画设置为跑步状态
-                    runTimer += Time.fixedDeltaTime; //开始跑步时，跑步计时器开始计时
-                    if (runTimer > runTimerSet) //如果跑步计时器超过设定值
-                    {
-                        runTimer = 0; //则重置计时器
-                        endurance -= runCost; //并减去花费耐力
-                    }
-
-                    enduranceCD = enduranceCDSet; //耐力CD重置
-                    enduranceTimer = 0; //耐力计时器重置
+                    runTimer = 0; //则重置计时器
+                    endurance -= runCost; //并减去花费耐力
                 }
+
+                enduranceCD = enduranceCDSet; //耐力CD重置
+                enduranceTimer = 0; //耐力计时器重置
             }
             else //未按下左Shift则是行走
             {

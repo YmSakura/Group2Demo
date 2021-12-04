@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class Pumpkin : MonoBehaviour
@@ -9,27 +10,30 @@ public class Pumpkin : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Collider2D col;
     [SerializeField] private GameObject fireballPrefab;
+    [SerializeField] private SpriteRenderer sprite;
 
-    public bool ready;
-    private float shootInterval=3f;         //Éä»÷CD
-    private float shootTimer=0f;            //ÉÏ´ÎÉä»÷Ê±¼ä
-    private float shootTimes=0;             //Éä»÷¼ÆÊıÆ÷
+    private bool ready, death;               //readyä»£è¡¨å—ç“œå¤´æ˜¯å¦å°±ç»ªå¯ä»¥å¼€å§‹æˆ˜æ–—,deathä»£è¡¨bossæœ¬ä½“æ­»äº¡
+    private float shootInterval=3f;         //å‘å°„CD
+    private float shootTimer=0f;            //å‘å°„è®¡æ—¶å™¨
+    //private float shootTimes=0;             //å°„å‡»æ¬¡æ•°
     
-    private Vector2 direction;              //ÄÏ¹ÏÍ·xy×ø±ê
-    private Vector2 playerTrans;            //Íæ¼Òxy×ø±ê
+    private Vector2 direction;              //å—ç“œå¤´xyåæ ‡
+    private Vector2 playerTrans;            //ç©å®¶xyåæ ‡
 
-    [SerializeField]private float speed = 1f;               //ÄÏ¹ÏÍ·ÒÆ¶¯ËÙ¶È
+    [SerializeField]private float speed = 1f;               //é£è¡Œé€Ÿåº¦
     
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+        sprite = GetComponent<SpriteRenderer>();
         col.enabled = false;
         ready = false;
+        death = false;
     }
 
-    private void OnEnable()
+    private void OnEnable()//å¯ç”¨æ—¶ä»æ‘„åƒæœºå¤–é£åˆ°åœ°å›¾ä¸­å¿ƒ
     {
         direction = (Vector2.zero - new Vector2(transform.position.x, transform.position.y)).normalized;
         transform.right = direction;
@@ -40,18 +44,24 @@ public class Pumpkin : MonoBehaviour
     void Update()
     {
         playerTrans = new Vector2(playerAt.transform.position.x, playerAt.transform.position.y);
-        checkReady();
         if (ready)
         {
-            MoveAndTurn();
-            Attack();
+            if (!death)
+            {
+                MoveAndTurn();
+                Attack();
+            }
+        }
+        else
+        {
+            checkReady();
         }
     }
 
-
+    //æ£€æµ‹å—ç“œå¤´è¿›å…¥,åˆ°è¾¾æŒ‡å®šåŒºåŸŸä½¿å…¶å°±ç»ªè¿›å…¥æˆ˜æ–—
     void checkReady()
     {
-        if (Mathf.Abs(transform.position.x) < 1 || Mathf.Abs(transform.position.y) < 1)
+        if (Mathf.Abs(transform.position.x) < 1 || Mathf.Abs(transform.position.y) < 1)//åœ¨(+-1,+-1)çš„åŒºåŸŸå†…æ¿€æ´»å—ç“œå¤´è¿›å…¥å°±ç»ªçŠ¶æ€
         {
             ready = true;
             col.enabled = true;
@@ -59,27 +69,27 @@ public class Pumpkin : MonoBehaviour
         
     }
         
-    //Ö¸ÏòÍæ¼Ò&ÒÆ¶¯
+    //æœç©å®¶é£è¡Œ
     private void MoveAndTurn()
     {
 
-        direction = (playerTrans - new Vector2(transform.position.x, transform.position.y)).normalized;
-        transform.right = direction;
-        rb.velocity = direction * speed;
+        direction = (playerTrans - new Vector2(transform.position.x, transform.position.y)).normalized;//è®¡ç®—å’Œç©å®¶çš„å¤¹è§’
+        transform.right = direction;//é¢æœç©å®¶
+        rb.velocity = direction * speed;//é£è¡Œ
     }
 
     
-    //Éä»÷
+    //å‘å°„ç«çƒ
     private void Attack()
     {
-        if (shootTimer != 0)                //Éä»÷CD¼ÆËã
+        if (shootTimer != 0)                //ç«çƒå‘å°„å†·å´
         {
             shootTimer -= Time.deltaTime;
             if (shootTimer <= 0)
                 shootTimer = 0;
         }
 
-        if (shootTimer == 0)                //Éä»÷CD½áÊø¾Í¿ªÊ¼·¢Éä»ğÇò
+        if (shootTimer == 0)                //å‘å°„è®¡æ—¶å™¨ä¸º0åˆ™å‘å°„ç«çƒ
         {
             shootTimer = shootInterval;
             Fire();
@@ -89,15 +99,27 @@ public class Pumpkin : MonoBehaviour
     }
 
     
-    //·¢Éä»ğÇò
+    //å‘å°„ç«çƒ
     protected virtual void Fire()
     {
-        GameObject fireball = ObjectPool.Instance.GetObject(fireballPrefab);    //´Ó³ØÖĞÈ¡³ö»ğÇò
-        fireball.transform.position = transform.position;                       //½«»ğÇò·ÅÖÃÓÚÄÏ¹ÏÍ·Î»ÖÃ
-        fireball.GetComponent<FireBall>().SetSpeed(direction);                  //½«»ğÇò³¯Íæ¼Ò·¢Éä
+        GameObject fireball = ObjectPool.Instance.GetObject(fireballPrefab);    //ä»æ± ä¸­å–å‡ºç«çƒ
+        fireball.transform.position = transform.position;                       //å°†ç«çƒæ”¾ç½®äºå—ç“œå¤´ä½ç½®
+        fireball.GetComponent<FireBall>().SetSpeed(direction);                  //æœç©å®¶å‘å°„
     }
 
-
-
+    
+    public IEnumerator Death()//BOSSæ­»äº¡æ—¶è°ƒç”¨,ä½¿å—ç“œå¤´å¤±æ´»
+    {
+        death = true;
+        yield return new WaitForSeconds(0.5f);
+        rb.velocity = Vector2.zero;//é€Ÿåº¦è®¾ç½®ä¸º0
+        while (sprite.color.a > 0)
+        {
+            sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a - 0.1f);
+            //å—ç“œå¤´é€æ¸é€æ˜
+            yield return new WaitForFixedUpdate();//ç­‰å¾…ä¸€ä¸ªFixedUpdateå¸§
+        }
+        gameObject.SetActive(false);//Ê¹ÄÏ¹ÏÍ·Ê§»î
+    }
 
 }
