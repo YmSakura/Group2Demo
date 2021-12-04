@@ -23,7 +23,8 @@ public class BossBegin : MonoBehaviour
         panel.SetActive(false);//关闭提示
     }
 
-    private void Update()
+
+    private void OnTriggerStay2D(Collider2D other)
     {
         if (Input.GetKeyDown(KeyCode.E)&&!isBegun)//按下E开始BOSS战
         {
@@ -33,6 +34,11 @@ public class BossBegin : MonoBehaviour
             Boss.GetComponent<Animator>().Play("start");//激活boss
             Invoke("EnableBoss",4.5f);
         }
+    }
+
+    private void Update()
+    {
+        
     }
 
     private void EnableBoss()

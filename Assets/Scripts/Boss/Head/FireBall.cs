@@ -39,13 +39,20 @@ public class FireBall : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Boss"&&!isUsed)                                           //碰到boss则boss扣血，火球返回池中
+        if (collision.gameObject.CompareTag("Boss") &&!isUsed)                                           //碰到boss则boss扣血，火球返回池中
         {
             collision.GetComponent<BossController>().BeAttacked(15f);
-            isUsed = true;
+            //isUsed = true;
+            ObjectPool.Instance.PushObject(gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Player") && !isUsed)
+        {
+            PlayerMovement.getDamage = 10;
+            //isUsed = true;
             ObjectPool.Instance.PushObject(gameObject);
         }
     }
+    
     
     public void SetSpeed(Vector2 direction)
     {

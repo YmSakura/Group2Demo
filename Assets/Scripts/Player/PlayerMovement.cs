@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     private const int enduranceIncrease = 2; //耐力回复量
 
     [Header("翻滚")]
-    private Vector2 rollDirction;//翻滚方向
+    private Vector2 rollDirection;//翻滚方向
     public static bool rollLock; //翻滚锁定
     [SerializeField] private float rollSpeed = 10; //翻滚移速
     private float rollSpeedMultiplier = 2.5f;//翻滚速度乘数,用于递减翻滚速度
@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject shield; //获取到盾牌的对象
     public float defendSpeed = 5; //防御移速
     public int defendPower = 8; //防御值
-    public static bool isHurt; //受伤状态判断
+    //public static bool isHurt; //受伤状态判断
     public static int getDamage;//收到伤害
     public static bool shieldState; //举盾状态
     public int defendCost; //防御耐力消耗
@@ -67,30 +67,31 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!rollLock)
         {
-            if (attackTime > 0)
+            if (attackTime > 0)//如果在攻击则速度设置为0
             {
                 rb.velocity = Vector2.zero;
             }
-            if (attackTime == 0)
+            else//不在战斗则可以进行移动
             {
                 Moving();
-                DefendingAnim();
-                if (shieldState)
+                
+                /*if (shieldState)
                 {
                     Defending(moveInput, getDamage);//如果正在举盾，则进行防御受伤判定
                 }
-                else if (!shieldState)
+                else
                 {
                     isHurt = true;//如果不在举盾，则直接变为受伤状态
+                }*/
+                if (Input.GetMouseButton(0) && endurance >= 15)
+                {
+                    attackTime = 1;
+                    anim.SetInteger("AttackState", attackTime);
                 }
             }
-            if (attackTime == 0 && Input.GetMouseButton(0) && endurance >= 15)
-            {
-                attackTime = 1;
-                anim.SetInteger("AttackState", attackTime);
-            }
+            DefendingAnim();//随时可以防御
         }
-        else
+        else//在翻滚则速度逐渐下降,低至一定程度则取消翻滚
         {
             if (rollSpeed > 3)
             {
@@ -102,13 +103,25 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         Rolling();
+        if (getDamage != 0)
+        {
+            if (shieldState)
+            {
+                Defending(moveInput,getDamage);
+            }
+            else
+            {
+                Hurt();
+            }
+        }
+
     }
 
     private void FixedUpdate()
     {
         if (rollLock)
         {
-            rb.velocity = rollDirction * rollSpeed;
+            rb.velocity = rollDirection * rollSpeed;
         }
 
     }
@@ -200,15 +213,15 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (moveInput.Equals(Vector2.zero))//如果没有输入，则向人物面朝方向翻滚
                 {
-                    rollDirction = new Vector2(transform.localScale.x / 0.08f, 0);
+                    rollDirection = new Vector2(transform.localScale.x / 0.08f, 0);
                 }
                 else//否则，则向输入运动方向翻滚
                 {
-                    rollDirction = moveInput;
+                    rollDirection = moveInput;
                 }
                 endurance -= rollCost;//扣除对应耐力
                 rollSpeed = 15f;//重置翻滚速度(由于每次翻滚时速度线性减小,故每次翻滚前需重置)
-                rb.velocity = rollDirction * rollSpeed;
+                rb.velocity = rollDirection * rollSpeed;
                 rollLock = true;//翻滚时禁用其他操作
                 //anim.SetBool("rollLock",true);
                 anim.Play("roll");//播放翻滚动画
@@ -227,21 +240,37 @@ public class PlayerMovement : MonoBehaviour
         enduranceCD = enduranceCDSet;//重置CD
     }
 
-    //普通防御（动画+动画事件）
+    //普通防御（动画）
     void DefendingAnim()
     {
-        shield.GetComponent<Collider2D>().enabled = true;//启用盾牌碰撞器
-        if (endurance > 0 && Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1))
         {
-            shieldState = true;//举盾状态
-            anim.SetBool("shieldState", shieldState);
+            shield.GetComponent<Collider2D>().enabled = true;
+            shieldState = true;
+            anim.SetBool("shieldState",true);
         }
-        else if (endurance <= 0 || !Input.GetMouseButton(1))
+        else
         {
-            shield.GetComponent<Collider2D>().enabled = false;//禁用盾牌碰撞器
-            shieldState = false;//放下盾牌
-            anim.SetBool("shieldState", shieldState);
+            shield.GetComponent<Collider2D>().enabled = false;
+            shieldState = false;
+            anim.SetBool("shieldState",false);
         }
+
+        /*{
+            shield.GetComponent<Collider2D>().enabled = true; //启用盾牌碰撞器
+
+            if (endurance > 0 && Input.GetMouseButton(1))
+            {
+                shieldState = true; //举盾状态
+                anim.SetBool("shieldState", shieldState);
+            }
+            else
+            {
+                shield.GetComponent<Collider2D>().enabled = false; //禁用盾牌碰撞器
+                shieldState = false; //放下盾牌
+                anim.SetBool("shieldState", shieldState);
+            }
+        }*/
     }
 
     void Defending(Vector2 moveInput, int getDamage)
@@ -256,12 +285,25 @@ public class PlayerMovement : MonoBehaviour
             if (endurance < (getDamage - defendPower))//伤害值大于耐力，则破盾，返回受伤状态
             {
                 endurance = 0;
-                isHurt = true;//更改受伤状态
+                //isHurt = true;//更改受伤状态
             }
             else
             {
-                endurance -= getDamage - defendPower;
+                endurance -= (getDamage - defendPower);
             }
+        }
+    }
+
+    //受伤
+    void Hurt()
+    {
+        if (!rollLock)
+        {
+            PlayerHurt.health -= getDamage;
+            anim.Play("hit");//播放受伤动画
+            //anim.SetBool("isHurt", true);
+            //isHurt = false;
+            getDamage = 0;
         }
     }
 
@@ -274,10 +316,10 @@ public class PlayerMovement : MonoBehaviour
     void ResetAttack()//连击条件重置
     {
         attackTime = 0;
-        anim.SetInteger("AttackState", attackTime);
+        anim.SetInteger("AttackState", 0);
         attackTimer = attackTimerSet;
         attackPause = false;
-        anim.SetBool("AttackPause", attackPause);
+        anim.SetBool("AttackPause", false);
     }
 
     void AttackCost()//每次攻击带来的影响

@@ -11,7 +11,7 @@ public class HorizontalAttackScope : MonoBehaviour
         
         if (playerHurt)
         {
-            playerHurt.Repeled(1,1);
+            playerHurt.Repeled();
             PlayerMovement.getDamage = 18;
         }
     }

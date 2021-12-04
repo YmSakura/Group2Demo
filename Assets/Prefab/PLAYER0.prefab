@@ -828,9 +828,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sword: {fileID: 6080845902667509911}
   damage: 0
-  walkSpeed: 2
-  runSpeed: 6
-  runCost: 1
   enduranceSet: 100
   enduranceTimer: 0
   enduranceTimerSet: 0.1
@@ -1548,19 +1545,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -704409407268880257, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_Bounds.m_Center.x
-      value: -3.8522172
+      value: -3.9593606
       objectReference: {fileID: 0}
     - target: {fileID: -704409407268880257, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_Bounds.m_Center.y
-      value: 0.51290977
+      value: 0.29198444
       objectReference: {fileID: 0}
     - target: {fileID: -704409407268880257, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_Bounds.m_Extent.x
-      value: 1.7842288
+      value: 1.804697
       objectReference: {fileID: 0}
     - target: {fileID: -704409407268880257, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_Bounds.m_Extent.y
-      value: 1.1270046
+      value: 1.2671213
       objectReference: {fileID: 0}
     - target: {fileID: -625343682028136477, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_SortingLayer
@@ -2116,7 +2113,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8985203247531487308, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.5254547
+      value: 0.6314158
       objectReference: {fileID: 0}
     - target: {fileID: 8985203247531487308, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_LocalRotation.x
@@ -2128,11 +2125,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8985203247531487308, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.85082155
+      value: 0.7754444
       objectReference: {fileID: 0}
     - target: {fileID: 8985203247531487308, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 116.602
+      value: 101.691
       objectReference: {fileID: 0}
     - target: {fileID: 9008701190644345565, guid: 5056e943412f1374b9e59caaf0d79f5b, type: 3}
       propertyPath: m_Bounds.m_Center.x

@@ -5,9 +5,9 @@ using UnityEngine;
 public class PlayerHurt : MonoBehaviour
 {
     [SerializeField] private float healthTimer, healthTimerSet = 5, collapseTimer, collapseTimerSet;
-    [SerializeField] public int healthSet = 120, healthIncrease = 1;
+    [SerializeField] private int healthSet = 120, healthIncrease = 1;
     public static int health;
-    public bool isHurt;
+    //public bool isHurt;
 
     // Start is called before the first frame update
     void Awake()
@@ -18,7 +18,7 @@ public class PlayerHurt : MonoBehaviour
 
     private void Update()
     {
-        if (!PlayerMovement.rollLock)
+        /*if (PlayerMovement.rollLock)
         {
             if (isHurt)
             {
@@ -28,8 +28,9 @@ public class PlayerHurt : MonoBehaviour
         }
         else
         {
-            Curing();
-        }
+            
+        }*/
+        Curing();
         DeadJudge();
     }
 
@@ -51,19 +52,19 @@ public class PlayerHurt : MonoBehaviour
     }
 
     //击退击飞
-    public IEnumerator Repeled(float x, float y)
+    public IEnumerator Repeled()
     {
-        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;
-        PlayerMovement.rb.velocity = new Vector2(-x * PlayerMovement.rb.velocity.x, -y * PlayerMovement.rb.velocity.y);
+        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;//禁止行动
+        PlayerMovement.rb.velocity *= -1;//速度朝反方向击退
         Debug.Log("人物被击退");
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.3f);
         ResetMovement();
     }
 
     //眩晕
     public IEnumerator Collapsing(float CollapseTime)
     {
-        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;
+        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;//禁止行动
         Debug.Log("人物被眩晕");
         yield return new WaitForSeconds(CollapseTime);
         ResetMovement();
@@ -72,16 +73,16 @@ public class PlayerHurt : MonoBehaviour
     //重置人物移动脚本
     private void ResetMovement()
     {
-        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = true;
+        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = true;//恢复行动
     }
 
     //重置受伤状态
-    public void RemoveHurt()
+    /*public void RemoveHurt()
     {
-        isHurt = false;
+        //isHurt = false;
         PlayerMovement.getDamage = 0;
-        PlayerMovement.anim.SetBool("isHurt", isHurt);
-    }
+        //PlayerMovement.anim.SetBool("isHurt", false);
+    }*/
 
     //死亡条件判断
     void DeadJudge()
