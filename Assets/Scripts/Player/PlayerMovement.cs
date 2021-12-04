@@ -47,8 +47,6 @@ public class PlayerMovement : MonoBehaviour
 
     private float spikeTimer = 0.0f; //突刺计时器
 
-    [Header("外部数据测试")] public static int getDamage = 1;
-
     // Start is called before the first frame update
     void Awake()
     {
