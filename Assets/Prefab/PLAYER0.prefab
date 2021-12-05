@@ -813,6 +813,9 @@ MonoBehaviour:
   collapseTimerSet: 0
   healthSet: 120
   healthIncrease: 1
+  boss: {fileID: 0}
+  player: {fileID: 2366143616908411843}
+  pumpkin: {fileID: 0}
   DeathPanel: {fileID: 0}
 --- !u!114 &8599526541393525440
 MonoBehaviour:
