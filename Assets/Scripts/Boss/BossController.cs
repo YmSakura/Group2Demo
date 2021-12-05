@@ -9,7 +9,7 @@ public class BossController : MonoBehaviour
     [Header("BOSS属性")] 
     public float moveSpeed;                 //移动速度
     public float AttackCd = 2f;             //技能的CD
-    public static float healthValue = 200f;       //Boss总血量
+    public static float healthValue = 1200f;       //Boss总血量
     private float secondStageHealth;        //进入第二阶段的血量，在awake初始化，为总血量的一半
     private int secondStageCount;           //进入半血的次数，只有第一次掉到半血才进入第二阶段
     public float AttackCdCount;             //技能的计时
@@ -314,6 +314,7 @@ public class BossController : MonoBehaviour
     {
         if (Physics2D.OverlapCircle(attackScope.position, attackScopeRadius, playerLayer))
         {
+            FlipTo(playerTransform);
             //只要进入攻击范围，就停止chase，通过内部函数来追击
             isInAttackScope = true;
             isChase = false;
@@ -402,6 +403,7 @@ public class BossController : MonoBehaviour
                             anim.SetInteger("RandomInt", randomInt);
                         }
                     }
+                    anim.SetInteger("RandomInt", randomInt);
                 }
                 
             }
@@ -543,7 +545,6 @@ public class BossController : MonoBehaviour
     {
         leftCircle.gameObject.SetActive(true);
     }
-
     void CloseRightCircle()
     {
         rightCircle.gameObject.SetActive(false);
@@ -551,6 +552,23 @@ public class BossController : MonoBehaviour
     void CloseLeftCircle()
     {
         leftCircle.gameObject.SetActive(false);
+    }
+    //开启和关闭锤击左右圆圈的碰撞体
+    void OpenHammerRightCollider()
+    {
+        rightCircle.GetComponent<Collider2D>().enabled = true;
+    }
+    void CloseHammerRightCollider()
+    {
+        rightCircle.GetComponent<Collider2D>().enabled = false;
+    }
+    void OpenHammerLeftCollider()
+    {
+        leftCircle.GetComponent<Collider2D>().enabled = true;
+    }
+    void CloseHammerLeftCollider()
+    {
+        leftCircle.GetComponent<Collider2D>().enabled = false;
     }
 
     //开启和关闭横扫的碰撞体
