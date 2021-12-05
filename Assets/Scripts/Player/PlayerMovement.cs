@@ -329,6 +329,7 @@ public class PlayerMovement : MonoBehaviour
         if (!rollLock)
         {
             PlayerHurt.health -= getDamage;
+            Debug.Log(PlayerHurt.health);
             anim.Play("hit");//播放受伤动画
             //anim.SetBool("isHurt", true);
             //isHurt = false;

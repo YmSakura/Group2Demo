@@ -9,7 +9,7 @@ public class Exit : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            SceneManager.LoadScene(0);//重启关卡
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);//到下个场景
         }
     }
 }

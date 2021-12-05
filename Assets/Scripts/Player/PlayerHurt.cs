@@ -11,6 +11,8 @@ public class PlayerHurt : MonoBehaviour
     public GameObject DeathPanel;//死亡面板
 
     private Rigidbody2D rb;
+
+    private Animator anim;
     //public bool isHurt;
 
     // Start is called before the first frame update
@@ -19,6 +21,7 @@ public class PlayerHurt : MonoBehaviour
         healthTimer = healthTimerSet;
         health = healthSet;
         rb = GetComponent<Rigidbody2D>();
+        anim=GetComponent<Animator>();
     }
 
     private void Update()
@@ -59,21 +62,31 @@ public class PlayerHurt : MonoBehaviour
     //击退击飞
     public IEnumerator Repeled()
     {
-        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;//禁止行动
-        PlayerMovement.rb.velocity *= -1;//速度朝反方向击退
-        Debug.Log("人物被击退");
-        yield return new WaitForSeconds(0.3f);
-        ResetMovement();
+        if (!PlayerMovement.rollLock)
+        {
+            anim.Play("hit");
+            GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;//禁止行动
+            PlayerMovement.rb.velocity *= -1;//速度朝反方向击退
+            Debug.Log("人物被击退");
+            yield return new WaitForSeconds(0.3f);
+            ResetMovement();
+        }
+        
     }
 
     //眩晕
     public IEnumerator Collapsing(float CollapseTime)
     {
-        rb.velocity=Vector2.zero;
-        GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;//禁止行动
-        Debug.Log("人物被眩晕");
-        yield return new WaitForSeconds(CollapseTime);
-        ResetMovement();
+        if (!PlayerMovement.rollLock)
+        {
+            rb.velocity=Vector2.zero;
+            anim.Play("hit");
+            anim.Play("idle");
+            GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;//禁止行动
+            Debug.Log("人物被眩晕");
+            yield return new WaitForSeconds(CollapseTime);
+            ResetMovement();
+        }
     }
 
     //重置人物移动脚本
@@ -96,8 +109,10 @@ public class PlayerHurt : MonoBehaviour
     {
         if (health <= 0)
         {
+            Debug.Log("Die");
+            rb.velocity = Vector2.zero;
+            //PlayerMovement.anim.SetBool("Death",true);
             PlayerMovement.anim.Play("die");
-            //PlayerMovement.anim.SetBool("IsDie",true);
             boss.GetComponent<BossController>().enabled = false;
             player.GetComponent<PlayerMovement>().enabled = false;
             pumpkin.GetComponent<Pumpkin>().enabled = false;
