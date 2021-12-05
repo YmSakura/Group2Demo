@@ -671,6 +671,7 @@ public class BossController : MonoBehaviour
         isIdle = true;
         headLight.intensity = 2;
         BossHp.SetActive(true);
+        PlayerHUD.isBossStart = true;
         BossHp.GetComponent<Slider>().maxValue = healthValue;
     }
     
