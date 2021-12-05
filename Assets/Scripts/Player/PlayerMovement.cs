@@ -36,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
     public static bool rollLock; //翻滚锁定
     [SerializeField] private float rollSpeed = 10; //翻滚移速
     private float rollSpeedMultiplier = 2.5f;//翻滚速度乘数,用于递减翻滚速度
-    private int rollCost = 20; //翻滚耐力消耗
+    private int rollCost = 12; //翻滚耐力消耗
 
     [Header("防御")]
     public GameObject shield; //获取到盾牌的对象
@@ -87,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     isHurt = true;//如果不在举盾，则直接变为受伤状态
                 }*/
-                if (Input.GetMouseButton(0) && endurance >= 15 )
+                if (Input.GetMouseButton(0) && endurance >= 15)
                 {
                     attackTime = 1;
                     SoundManager.Sound.PlayerAudioPlay("attack"); //设为攻击音效
@@ -247,11 +247,23 @@ public class PlayerMovement : MonoBehaviour
     //普通防御（动画）
     void DefendingAnim()
     {
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1)&& attackTime==0)
         {
-            shield.GetComponent<Collider2D>().enabled = true;
-            shieldState = true;
-            anim.SetBool("shieldState",true);
+            if (!Input.GetMouseButton(0))
+            {
+                shield.GetComponent<Collider2D>().enabled = true;
+                shieldState = true;
+                anim.SetBool("shieldState",true);
+            }
+            else if (endurance >= 15 )
+            {
+                shieldState = false;
+                defendMusicOn = false;
+                attackTime = 1;
+                SoundManager.Sound.PlayerAudioPlay("attack"); //设为攻击音效
+                anim.Play("raise shield-attack1-1");
+                slash.gameObject.SetActive(true);
+            }
         }
         else
         {
@@ -260,7 +272,7 @@ public class PlayerMovement : MonoBehaviour
             defendMusicOn = false;
             anim.SetBool("shieldState",false);
         }
-
+        
         /*{
             shield.GetComponent<Collider2D>().enabled = true; //启用盾牌碰撞器
 
