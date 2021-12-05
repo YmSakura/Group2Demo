@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class BossController : MonoBehaviour
@@ -13,7 +14,7 @@ public class BossController : MonoBehaviour
     private float secondStageHealth;        //进入第二阶段的血量，在awake初始化，为总血量的一半
     private int secondStageCount;           //进入半血的次数，只有第一次掉到半血才进入第二阶段
     public float AttackCdCount;             //技能的计时
-    private float droppedHealth = 20f;      //第二阶段固定血量释放魔法攻击
+    private float droppedHealth = 150f;      //第二阶段固定血量释放魔法攻击
     private int startCount;                 //播放开始动画的次数，只会播放一次
     private int sprintCount;                //冲刺的次数
     private int closeAttackCount;           //进行近身攻击的次数
@@ -670,6 +671,7 @@ public class BossController : MonoBehaviour
         isIdle = true;
         headLight.intensity = 2;
         BossHp.SetActive(true);
+        BossHp.GetComponent<Slider>().maxValue = healthValue;
     }
     
     //开启环境光

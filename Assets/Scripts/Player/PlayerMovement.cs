@@ -28,8 +28,8 @@ public class PlayerMovement : MonoBehaviour
     public static int endurance; //耐力值
     [SerializeField] private float enduranceTimer, enduranceTimerSet = 0.1f; //耐力恢复计时器
     [SerializeField] private float enduranceCD;//耐力CD计时器
-    private const float enduranceCDSet = 1.2f; //耐力CD时间
-    private const int enduranceIncrease = 2; //耐力回复量
+    private const float enduranceCDSet = 0.8f; //耐力CD时间
+    private const int enduranceIncrease = 3; //耐力回复量
 
     [Header("翻滚")]
     private Vector2 rollDirection;//翻滚方向
@@ -66,6 +66,9 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        inputX = Input.GetAxisRaw("Horizontal");
+        inputY = Input.GetAxisRaw("Vertical");
+        moveInput = new Vector2(inputX, inputY).normalized;
         if (!rollLock)
         {
             if (attackTime > 0)//如果在攻击则速度设置为0
@@ -133,9 +136,7 @@ public class PlayerMovement : MonoBehaviour
     //人物移动
     void Moving()
     {
-        inputX = Input.GetAxisRaw("Horizontal");
-        inputY = Input.GetAxisRaw("Vertical");
-        moveInput = new Vector2(inputX, inputY).normalized;
+        
         if (Input.GetKeyDown(KeyCode.LeftShift))
             runEnabled = true;//按下shift时重置跑步
         if (inputX != 0 || inputY != 0)
@@ -305,6 +306,8 @@ public class PlayerMovement : MonoBehaviour
                 endurance -= Damage;//耐力减少等同于原本伤害的数值
                 getDamage -= defendPower;//伤害抵消
             }
+
+            enduranceCD = enduranceCDSet;
         }
     }
 
@@ -351,12 +354,26 @@ public class PlayerMovement : MonoBehaviour
         {
             attackTime++;
             anim.SetInteger("AttackState", attackTime);
-            SoundManager.Sound.PlayerAudioPlay("attack"); //设为攻击音效
+            if (attackTime == 3)
+            {
+                Invoke("AttackAudioPlay",0.2f);
+            }
+            else
+            {
+                AttackAudioPlay(); //设为攻击音效
+            }
+            
         }
         else
         {
             PlayerMovement.anim.SetBool("AttackPause", true);
+            
         }
+    }
+
+    public void AttackAudioPlay()
+    {
+        SoundManager.Sound.PlayerAudioPlay("attack");
     }
 }
 

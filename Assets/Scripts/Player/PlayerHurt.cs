@@ -7,7 +7,10 @@ public class PlayerHurt : MonoBehaviour
     [SerializeField] private float healthTimer, healthTimerSet = 5, collapseTimer, collapseTimerSet;
     [SerializeField] private int healthSet = 120, healthIncrease = 1;
     public static int health;
+    public GameObject boss,player,pumpkin;
     public GameObject DeathPanel;//死亡面板
+
+    private Rigidbody2D rb;
     //public bool isHurt;
 
     // Start is called before the first frame update
@@ -15,6 +18,7 @@ public class PlayerHurt : MonoBehaviour
     {
         healthTimer = healthTimerSet;
         health = healthSet;
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -65,6 +69,7 @@ public class PlayerHurt : MonoBehaviour
     //眩晕
     public IEnumerator Collapsing(float CollapseTime)
     {
+        rb.velocity=Vector2.zero;
         GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = false;//禁止行动
         Debug.Log("人物被眩晕");
         yield return new WaitForSeconds(CollapseTime);
@@ -74,6 +79,7 @@ public class PlayerHurt : MonoBehaviour
     //重置人物移动脚本
     private void ResetMovement()
     {
+        Debug.Log("Recover");
         GameObject.Find("PLAYER0").GetComponent<PlayerMovement>().enabled = true;//恢复行动
     }
 
@@ -91,7 +97,10 @@ public class PlayerHurt : MonoBehaviour
         if (health <= 0)
         {
             PlayerMovement.anim.Play("die");
-            PlayerMovement.anim.SetBool("IsDie",true);
+            //PlayerMovement.anim.SetBool("IsDie",true);
+            boss.GetComponent<BossController>().enabled = false;
+            player.GetComponent<PlayerMovement>().enabled = false;
+            pumpkin.GetComponent<Pumpkin>().enabled = false;
             DeathPanel.SetActive(true);
         }
     }
