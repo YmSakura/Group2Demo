@@ -4,11 +4,11 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - audioMixer: {fileID: 24100000, guid: 764275920b3c9944ca31b9094c3017f1, type: 2}
   - MusicAudioSource: {instanceID: 0}
-  - SFXAudioSource: {instanceID: 0}
-  - playerAttackAudio: {instanceID: 0}
-  - playerHurtAudio: {instanceID: 0}
+  - PlayerSFXAudioSource: {instanceID: 0}
+  - BossSFXAudioSource: {instanceID: 0}
+  - playerAttackAudio: {fileID: 8300000, guid: 9494b25329bd3ce46a80c3e4af9753c6, type: 3}
+  - playerHurtAudio: {fileID: 8300000, guid: f00033e32207f804bab51e47abf94820, type: 3}
   - playerDefenceAudio: {instanceID: 0}
   - bossAttackAudio: {instanceID: 0}
   - bossHurtAudio: {instanceID: 0}

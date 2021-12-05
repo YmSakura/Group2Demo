@@ -46,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
     public static int getDamage;//收到伤害
     public static bool shieldState; //举盾状态
     public int defendCost; //防御耐力消耗
+    private bool defendMusicOn;//防御音效开关
 
     private float spikeTimer = 0.0f; //突刺计时器
 
@@ -86,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
                 if (Input.GetMouseButton(0) && endurance >= 15 )
                 {
                     attackTime = 1;
+                    SoundManager.Sound.PlayerAudioPlay("attack"); //设为攻击音效
                     anim.SetInteger("AttackState", 1);
                     slash.gameObject.SetActive(true);
                 }
@@ -254,6 +256,7 @@ public class PlayerMovement : MonoBehaviour
         {
             shield.GetComponent<Collider2D>().enabled = false;
             shieldState = false;
+            defendMusicOn = false;
             anim.SetBool("shieldState",false);
         }
 
@@ -272,6 +275,15 @@ public class PlayerMovement : MonoBehaviour
                 anim.SetBool("shieldState", shieldState);
             }
         }*/
+    }
+    //启用防御音效（动画事件）
+    void DefendMusicOn()
+    {
+        if (!defendMusicOn)
+        {
+            defendMusicOn = true;
+            SoundManager.Sound.PlayerAudioPlay("defence");
+        }
     }
 
     void Defending(Vector2 moveInput, int Damage)
@@ -307,6 +319,7 @@ public class PlayerMovement : MonoBehaviour
             //isHurt = false;
             getDamage = 0;//重置伤害
             attackTime = 0;//打断攻击
+            SoundManager.Sound.PlayerAudioPlay("hurt");//设为受伤音效
         }
     }
 
@@ -338,6 +351,7 @@ public class PlayerMovement : MonoBehaviour
         {
             attackTime++;
             anim.SetInteger("AttackState", attackTime);
+            SoundManager.Sound.PlayerAudioPlay("attack"); //设为攻击音效
         }
         else
         {

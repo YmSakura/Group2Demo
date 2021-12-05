@@ -16,16 +16,19 @@ public class Sword : MonoBehaviour
             if (PlayerMovement.attackTime == 1)
             {
                 BossColl.GetComponent<BossController>().BeAttacked(12);
+                SoundManager.Sound.BossAudioPlay("hurt");
                 hurtAble = false;
             }
             else if (PlayerMovement.attackTime == 2)
             {
                 BossColl.GetComponent<BossController>().BeAttacked(16);
+                SoundManager.Sound.BossAudioPlay("hurt");
                 hurtAble = false;
             }
             else if (PlayerMovement.attackTime == 3)
             {
                 BossColl.GetComponent<BossController>().BeAttacked(22);
+                SoundManager.Sound.BossAudioPlay("hurt");
                 hurtAble = false;
             }
         }
