@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -50,7 +51,7 @@ public class BossController : MonoBehaviour
 
     [Header("技能检测相关组件")] 
     public Transform verticalAttackScope;           //竖劈的范围显示（有Sprite，通过overlap检测）
-    public GameObject horizontalAttackScope;        //横划的范围显示（通过碰撞体检测）
+    public Collider2D horizontalAttackScope;        //横划的范围显示（通过碰撞体检测）
     public GameObject magicAttackScope;             //魔法攻击点的父物体
     private Transform[] magicCircle;                //魔法攻击具体位置
     public Transform player;                        //player本体
@@ -125,7 +126,7 @@ public class BossController : MonoBehaviour
 
         //默认不开启技能范围检测
         verticalAttackScope.gameObject.SetActive(false);
-        horizontalAttackScope.SetActive(false);
+        horizontalAttackScope.enabled = false;
         for (int i = 1; i < 4; i++)
         {
             magicCircle[i].gameObject.SetActive(false);
@@ -529,11 +530,11 @@ public class BossController : MonoBehaviour
     //开启和关闭横划的检测范围(碰撞体)
     void OpenHorizontalAttackScope()
     {
-        horizontalAttackScope.SetActive(true);
+        horizontalAttackScope.enabled = true;
     }
     void CloseHorizontalAttackScope()
     {
-        horizontalAttackScope.SetActive(false);
+        horizontalAttackScope.enabled = false;
     }
     
 
