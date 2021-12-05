@@ -10,7 +10,7 @@ public class Circle : MonoBehaviour
         PlayerHurt playerHurt = CollisionCheck.PlayerCheck(other);
         if (playerHurt)
         {
-            playerHurt.Repeled();
+            StartCoroutine(playerHurt.Repeled());
             PlayerMovement.getDamage = 20;
         }
             

@@ -10,7 +10,7 @@ public class HammerBlowLeft : MonoBehaviour
         PlayerHurt playerHurt = CollisionCheck.PlayerCheck(other);
         if (playerHurt)
         {
-            playerHurt.Collapsing(1);
+            StartCoroutine(playerHurt.Collapsing(1));
             PlayerMovement.getDamage = 18;
         }
     }

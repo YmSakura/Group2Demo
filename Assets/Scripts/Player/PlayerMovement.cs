@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public static int attackTime = 0; //攻击阶段
+    public static int attackTime; //攻击阶段
     private bool attackPause; //是否要停止攻击判断
     public GameObject sword; //获取到剑的对象
     public int damage; //造成的伤害

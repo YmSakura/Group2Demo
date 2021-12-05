@@ -9,7 +9,7 @@ public class BossController : MonoBehaviour
     [Header("BOSS属性")] 
     public float moveSpeed;                 //移动速度
     public float AttackCd = 2f;             //技能的CD
-    public static float healthValue = 1200f;       //Boss总血量
+    public static float healthValue = 200f;       //Boss总血量
     private float secondStageHealth;        //进入第二阶段的血量，在awake初始化，为总血量的一半
     private int secondStageCount;           //进入半血的次数，只有第一次掉到半血才进入第二阶段
     public float AttackCdCount;             //技能的计时
@@ -252,11 +252,6 @@ public class BossController : MonoBehaviour
         pumpkin.SetActive(true);
     }
     
-    //死亡动画结束时调用，为了只播放一次死亡动画，之后就一直处于die state
-    // void CloseDieAnim()
-    // {
-    //     anim.SetBool("StartDieAnim", false);
-    // }
 
     //检测玩家是否处于追击范围
     public void UpdateChaseStatus()
@@ -508,7 +503,7 @@ public class BossController : MonoBehaviour
             PlayerHurt playerHurt = CollisionCheck.PlayerCheck(playerCollider);
             if (playerHurt)
             {
-                playerHurt.Collapsing(1);
+                StartCoroutine(playerHurt.Collapsing(1));
                 PlayerMovement.getDamage = 24;
             }
 
