@@ -312,7 +312,7 @@ public class BossController : MonoBehaviour
     //检测玩家是否位于攻击范围内，Update中调用
     void IsInAttackScope()
     {
-        if (Physics2D.OverlapCircle(attackScope.position, attackScopeRadius, playerLayer))
+        if (Physics2D.OverlapCircle(attackScope.position, attackScopeRadius, playerLayer) && isStart)
         {
             FlipTo(playerTransform);
             //只要进入攻击范围，就停止chase，通过内部函数来追击
