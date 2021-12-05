@@ -180,7 +180,7 @@ public class BossController : MonoBehaviour
         if ((isIdle || isWalk) && !isDie && !isAttack)
         {
             isAttacked = true;
-            //SoundManager.Sound.AudioName("boss", "hurt");
+            SoundManager.Sound.BossAudioPlay("hurt");
             //这里要直接调用一下受击的动画来显示受伤
             anim.SetBool("IsAttacked", isAttacked);
         }
