@@ -144,7 +144,7 @@ public class PlayerMovement : MonoBehaviour
                 transform.localScale = new Vector3(inputX, 1, 1) * 0.08f; //根据输入方向调整左右
             }
 
-            if (Input.GetKey(KeyCode.LeftShift) && runEnabled) //当左shift被按住时并且允许跑步时才开始跑步
+            if (Input.GetKey(KeyCode.LeftShift) && runEnabled && !shieldState) //当左shift被按住时并且允许跑步时才开始跑步
             {
                 if (endurance >= runCost)//当且仅当耐力值大于跑步消耗时才可以跑步
                 {
@@ -261,8 +261,10 @@ public class PlayerMovement : MonoBehaviour
                 shieldState = false;
                 defendMusicOn = false;
                 attackTime = 1;
+                anim.SetBool("shieldState",true);
+                anim.SetBool("AttackState",false);
                 SoundManager.Sound.PlayerAudioPlay("attack"); //设为攻击音效
-                anim.Play("raise shield-attack1-1");
+                //anim.Play("raise shield-attack1-1");
                 slash.gameObject.SetActive(true);
             }
         }
