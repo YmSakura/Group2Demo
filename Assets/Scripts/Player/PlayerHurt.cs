@@ -112,10 +112,10 @@ public class PlayerHurt : MonoBehaviour
             Debug.Log("Die");
             rb.velocity = Vector2.zero;
             //PlayerMovement.anim.SetBool("Death",true);
-            PlayerMovement.anim.Play("die");
-            boss.GetComponent<BossController>().enabled = false;
+            anim.Play("die");
+            //boss.GetComponent<BossController>().enabled = false;
             player.GetComponent<PlayerMovement>().enabled = false;
-            pumpkin.GetComponent<Pumpkin>().enabled = false;
+            //pumpkin.GetComponent<Pumpkin>().enabled = false;
             DeathPanel.SetActive(true);
         }
     }

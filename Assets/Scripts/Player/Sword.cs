@@ -15,17 +15,17 @@ public class Sword : MonoBehaviour
         {
             if (PlayerMovement.attackTime == 1)
             {
-                BossColl.GetComponent<BossController>().BeAttacked(12);
+                BossColl.GetComponent<BossController>().BeAttacked(16);
                 hurtAble = false;
             }
             else if (PlayerMovement.attackTime == 2)
             {
-                BossColl.GetComponent<BossController>().BeAttacked(16);
+                BossColl.GetComponent<BossController>().BeAttacked(22);
                 hurtAble = false;
             }
             else if (PlayerMovement.attackTime == 3)
             {
-                BossColl.GetComponent<BossController>().BeAttacked(22);
+                BossColl.GetComponent<BossController>().BeAttacked(28);
                 hurtAble = false;
             }
         }

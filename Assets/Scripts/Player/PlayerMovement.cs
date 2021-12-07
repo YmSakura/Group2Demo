@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
     public static int endurance; //耐力值
     [SerializeField] private float enduranceTimer, enduranceTimerSet = 0.1f; //耐力恢复计时器
     [SerializeField] private float enduranceCD;//耐力CD计时器
-    private const float enduranceCDSet = 0.8f; //耐力CD时间
+    private const float enduranceCDSet = 0.5f; //耐力CD时间
     private const int enduranceIncrease = 3; //耐力回复量
 
     [Header("翻滚")]
@@ -115,10 +115,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 Defending(moveInput,getDamage);
             }
-            else
-            {
-                Hurt();
-            }
+            Hurt();
         }
 
     }
@@ -223,13 +220,17 @@ public class PlayerMovement : MonoBehaviour
                 {
                     rollDirection = moveInput;
                 }
+
+                attackTime = 0;
                 endurance -= rollCost;//扣除对应耐力
                 rollSpeed = 15f;//重置翻滚速度(由于每次翻滚时速度线性减小,故每次翻滚前需重置)
-                rb.velocity = rollDirection * rollSpeed;
+                rb.velocity = rollDirection * rollSpeed;//给与翻滚速度
                 rollLock = true;//翻滚时禁用其他操作
-                //anim.SetBool("rollLock",true);
+                anim.SetInteger("AttackState",0);//打断攻击动画
+                slash.gameObject.SetActive(false);//关闭剑光
                 anim.Play("roll");//播放翻滚动画
                 //Invoke("EndRolling",0.65f);//延时结束
+                //anim.SetBool("rollLock",true);
             }
         }
     }

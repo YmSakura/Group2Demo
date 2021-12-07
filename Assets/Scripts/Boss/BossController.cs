@@ -93,6 +93,7 @@ public class BossController : MonoBehaviour
     public Light dirLight;      //场景中的线性光
     public Light headLight;     //Boss南瓜头的点光
     public Light spotLight;    //出口聚光
+    //public GameObject exitCheck;//出口检测
     public GameObject exit;     //场景出口
     public GameObject BossHp;   //Boss血条
     public GameObject shadow;   //影子
@@ -237,6 +238,7 @@ public class BossController : MonoBehaviour
             exit.SetActive(false);//关闭出口墙体，打开出口
             BossHp.SetActive(false);//关闭BOSS血条
             shadow.SetActive(false);
+            //exitCheck.SetActive(true);
             spotLight.gameObject.SetActive(true);
             SoundManager.Sound.StopMusic();
         }
@@ -407,7 +409,9 @@ public class BossController : MonoBehaviour
                     }
                     anim.SetInteger("RandomInt", randomInt);
                 }
-                
+
+                if (randomInt != 2)
+                    isAttack = true;//如果不是竖劈(蓄力时可以转向)，则在函数中将isAttack设置成true禁止转向(以防动画事件未生效)
             }
 
             //计算cd
